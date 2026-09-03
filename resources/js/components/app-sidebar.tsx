@@ -1,31 +1,21 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { House, ListChecks, ShoppingBasket, Sofa, Wallet } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        url: '/dashboard',
-        icon: LayoutGrid,
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        url: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        url: 'https://laravel.com/docs/starter-kits',
-        icon: BookOpen,
-    },
+/**
+ * Cinco destinos. El límite no es estético: una barra sobrecargada obliga a
+ * leerla cada vez en lugar de apuntar de memoria.
+ */
+const navPrincipal: NavItem[] = [
+    { title: 'Inicio', url: '/dashboard', icon: House },
+    { title: 'PlataText', url: '/plata', icon: Wallet },
+    { title: 'Tareas', url: '/tareas', icon: ListChecks },
+    { title: 'Compras', url: '/compras', icon: ShoppingBasket },
+    { title: 'La casa', url: '/casa', icon: Sofa },
 ];
 
 export function AppSidebar() {
@@ -44,11 +34,10 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={navPrincipal} />
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

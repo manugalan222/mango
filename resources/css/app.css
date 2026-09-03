@@ -1,18 +1,30 @@
 @import 'tailwindcss';
 
+/* Tipografía autoalojada. Sin pedido a terceros y con ejes variables:
+   opsz 12–96 y wght 200–800 en la display, wght 100–900 en la de UI. */
+@import '@fontsource-variable/bricolage-grotesque/opsz.css';
+@import '@fontsource-variable/hanken-grotesk';
+
 @plugin 'tailwindcss-animate';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
 @custom-variant dark (&:is(.dark *));
 
-@theme {
-    --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+@theme inline {
+    --font-sans: 'Hanken Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Bricolage Grotesque Variable', 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
 
+    /* Formas: una por rol. No hay una sexta. */
+    --radius: 0.6875rem; /* 11px — guijarro: inputs, selects, filas */
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
+    --radius-placa: 1rem; /* tarjetas y paneles */
+    --radius-almohadon: 22px / 16px; /* botones: más ancho que alto, se lee relleno */
+    --radius-hoja: 50% 8px 50% 8px; /* marca: avatar, nav activa, sello */
+    --radius-arco: 999px 999px 12px 12px; /* marcos de ilustración */
 
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -42,6 +54,8 @@
     --color-input: var(--input);
     --color-ring: var(--ring);
 
+    /* Paleta categórica validada: banda de luminosidad, piso de croma,
+       separación bajo protanopía/deuteranopía/tritanopía. */
     --color-chart-1: var(--chart-1);
     --color-chart-2: var(--chart-2);
     --color-chart-3: var(--chart-3);
@@ -56,103 +70,413 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    /* Nombres propios de MANGO. Todo lo de arriba es la capa semántica de shadcn;
+       esto es la capa de marca, para cuando un componente necesita el material y no el rol. */
+    --color-yeso: var(--yeso);
+    --color-lino: var(--lino);
+    --color-panel: var(--panel);
+    --color-panel-ink: var(--panel-ink);
+    --color-tinta: var(--tinta);
+    --color-tinta-2: var(--tinta-2);
+    --color-tinta-3: var(--tinta-3);
+    --color-mango: var(--mango);
+    --color-mango-texto: var(--mango-texto);
+    --color-mango-suave: var(--mango-suave);
+    --color-on-mango: var(--on-mango);
+    --color-ambar: var(--ambar);
+    --color-arcilla: var(--arcilla);
+    --color-verde: var(--verde);
+    --color-verde-dato: var(--verde-dato);
+    --color-ciruela: var(--ciruela);
+    --color-nogal: var(--nogal);
+    --color-ok-bg: var(--ok-bg);
+    --color-ok-ink: var(--ok-ink);
+    --color-warn-bg: var(--warn-bg);
+    --color-warn-ink: var(--warn-ink);
+    --color-mia-bg: var(--mia-bg);
+    --color-mia-ink: var(--mia-ink);
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
+/* ─────────────────────────── CLARO ─────────────────────────── */
+:root {
+    /* materia */
+    --yeso: oklch(0.9368 0.0194 80.12); /* muro de yeso cálido */
+    --lino: oklch(0.9743 0.0143 84.58); /* superficie elevada */
+    --panel: oklch(0.3195 0.0335 157.53); /* verde sillón */
+    --panel-ink: oklch(0.9277 0.0235 82.12);
+    --tinta: oklch(0.2502 0.0214 53.96); /* espresso, nunca negro puro */
+    --tinta-2: oklch(0.4825 0.0312 65.14);
+    --tinta-3: oklch(0.5154 0.0302 70.8); /* 4.68:1 sobre yeso */
+    --nogal: oklch(0.351 0.0388 59.72);
+    --nogal-ink: oklch(0.9362 0.025 75.27);
 
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
+    /* naranja: relleno y texto son colores distintos, a propósito */
+    --mango: oklch(0.6137 0.1793 39.4); /* rellenos grandes y marcas de gráfico */
+    --mango-texto: oklch(0.5199 0.157 38.27); /* texto chico y links — 4.92:1 */
+    --mango-boton: oklch(0.5647 0.1688 38.2); /* relleno con texto blanco — 4.93:1 */
+    --on-mango: oklch(1 0 89.88);
+    --mango-suave: oklch(0.9195 0.0326 52.32);
+
+    --ambar: oklch(0.7648 0.1404 73.13);
+    --arcilla: oklch(0.8275 0.0606 45.82);
+    --verde: oklch(0.5638 0.1151 161.75); /* marca de gráfico */
+    --verde-dato: oklch(0.5154 0.1062 161.63); /* monto de ingreso — 4.94:1 */
+    --ciruela: oklch(0.624 0.1271 355.84);
+
+    /* estados */
+    --ok-bg: oklch(0.9093 0.031 165.25);
+    --ok-ink: oklch(0.416 0.0854 161.59);
+    --warn-bg: oklch(0.9251 0.0515 83.4);
+    --warn-ink: oklch(0.4401 0.0877 73.87);
+    --mia-bg: oklch(0.9076 0.0331 351.2);
+    --mia-ink: oklch(0.4556 0.1246 356.78);
+
+    /* capa semántica de shadcn */
+    --background: var(--yeso);
+    --foreground: var(--tinta);
+    --card: var(--lino);
+    --card-foreground: var(--tinta);
+    --popover: var(--lino);
+    --popover-foreground: var(--tinta);
+    --primary: var(--mango-boton);
+    --primary-foreground: var(--on-mango);
+    --secondary: var(--panel);
+    --secondary-foreground: var(--panel-ink);
+    --muted: oklch(0.904 0.0253 81.12);
+    --muted-foreground: var(--tinta-3);
+    --accent: var(--mango-suave);
+    --accent-foreground: var(--mango-texto);
+    --destructive: oklch(0.4634 0.1489 29.89); /* ladrillo profundo: borrar no es la marca */
+    --destructive-foreground: oklch(1 0 89.88);
+    --border: oklch(0.863 0.0295 77.52); /* separador decorativo, sin requisito */
+    --input: oklch(0.5943 0.0461 75.01); /* afordancia de formulario — 3.37:1 */
+    --ring: var(--mango-texto);
+
+    --chart-1: var(--mango);
+    --chart-2: var(--verde);
+    --chart-3: var(--ambar);
+    --chart-4: var(--ciruela);
+    --chart-5: var(--arcilla);
+
+    --sidebar-background: var(--panel);
+    --sidebar-foreground: var(--panel-ink);
+    --sidebar-primary: var(--mango-boton);
+    --sidebar-primary-foreground: var(--on-mango);
+    --sidebar-accent: oklch(0.3622 0.0385 158.19);
+    --sidebar-accent-foreground: var(--panel-ink);
+    --sidebar-border: oklch(0.4041 0.0435 156.25);
+    --sidebar-ring: var(--mango);
+
+    /* sombras teñidas de espresso: una sombra gris sobre fondo cálido se ve sucia */
+    --sombra: 0 1px 2px oklch(0.2502 0.0214 53.96 / 0.05), 0 8px 24px -12px oklch(0.2502 0.0214 53.96 / 0.18);
+
+    /* texturas — dos intensidades. La de componente vive entre 4 y 11%;
+       la de muestra sólo se usa en documentación de materiales. */
+    --tex-nudo:
+        radial-gradient(circle at 1.5px 1.5px, rgb(255 255 255 / 0.075) 1px, transparent 1.7px),
+        radial-gradient(circle at 3px 5px, rgb(0 0 0 / 0.07) 1.1px, transparent 1.9px),
+        radial-gradient(circle at 6px 2px, rgb(255 255 255 / 0.042) 0.9px, transparent 1.5px),
+        radial-gradient(circle at 8px 7px, rgb(0 0 0 / 0.05) 1px, transparent 1.8px);
+    --tex-nudo-size: 11px 11px, 13px 13px, 9px 9px, 15px 15px;
+    --tex-pana: repeating-linear-gradient(
+        90deg,
+        rgb(0 0 0 / 0.115) 0px,
+        rgb(0 0 0 / 0.012) 2.4px,
+        rgb(255 255 255 / 0.052) 4.6px,
+        rgb(0 0 0 / 0.012) 6.8px,
+        rgb(0 0 0 / 0.115) 9px
+    );
+    --fibra: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='130'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='130' height='130' filter='url(%23f)' opacity='0.11'/></svg>");
+    /* caída de lámpara: no se repite, por eso puede vivir en superficie permanente */
+    --luz-panel: radial-gradient(130% 76% at 22% -6%, rgb(255 255 255 / 0.055), transparent 64%);
+    --ceramica-hi: linear-gradient(180deg, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0) 46%);
+    --vidriado-torno: repeating-radial-gradient(circle at 6% 152%, rgb(255 255 255 / 0.07) 0 1px, transparent 1px 6px);
+    --vidrio: oklch(0.9743 0.0143 84.58 / 0.6);
+    --vidrio-borde: rgb(255 255 255 / 0.55);
+}
+
+/* ─────────────────────────── OSCURO — la sala de noche ─────────────────────────── */
+.dark {
+    --yeso: oklch(0.202 0.0114 48.13);
+    --lino: oklch(0.2343 0.0157 53.75);
+    --panel: oklch(0.3809 0.0459 155.37);
+    --panel-ink: oklch(0.929 0.0216 76.53);
+    --tinta: oklch(0.929 0.0216 76.53);
+    --tinta-2: oklch(0.7508 0.032 68.91);
+    --tinta-3: oklch(0.622 0.0308 70.7);
+    --nogal: oklch(0.2753 0.0289 54.87);
+    --nogal-ink: oklch(0.929 0.0216 76.53);
+
+    --mango: oklch(0.6674 0.1742 42.05);
+    --mango-texto: oklch(0.6674 0.1742 42.05);
+    --mango-boton: oklch(0.6674 0.1742 42.05);
+    --on-mango: oklch(0.2201 0.0242 60.36);
+    --mango-suave: oklch(0.2782 0.0415 38.5);
+
+    --ambar: oklch(0.7663 0.1312 78.58);
+    --arcilla: oklch(0.6972 0.0802 40.97);
+    --verde: oklch(0.6314 0.1216 162.27);
+    --verde-dato: oklch(0.6314 0.1216 162.27);
+    --ciruela: oklch(0.6589 0.1288 354.85);
+
+    --ok-bg: oklch(0.3398 0.0488 168.03);
+    --ok-ink: oklch(0.8281 0.0809 166.3);
+    --warn-bg: oklch(0.3349 0.0575 80.26);
+    --warn-ink: oklch(0.8482 0.1054 80.5);
+    --mia-bg: oklch(0.3041 0.0562 357.32);
+    --mia-ink: oklch(0.8109 0.0843 352.86);
+
+    --muted: oklch(0.273 0.0164 50.75);
+    --destructive: oklch(0.5616 0.1684 31.48);
+    --destructive-foreground: oklch(0.929 0.0216 76.53);
+    --border: oklch(0.312 0.0224 55.42);
+    --input: oklch(0.5287 0.0403 65.38);
+
+    --sidebar-accent: oklch(0.4304 0.0487 154.68);
+    --sidebar-border: oklch(0.4523 0.0472 156.2);
+
+    --sombra: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.55);
+    --fibra: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='130'><filter id='fd'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='130' height='130' filter='url(%23fd)' opacity='0.08'/></svg>");
+    --vidrio: oklch(0.202 0.0114 48.13 / 0.66);
+    --vidrio-borde: rgb(255 255 255 / 0.14);
+}
+
 @layer base {
     *,
     ::after,
     ::before,
     ::backdrop,
     ::file-selector-button {
-        border-color: var(--color-gray-200, currentColor);
-    }
-}
-
-:root {
-    --background: hsl(0, 0%, 100%);
-    --foreground: hsl(0, 0%, 3.9%);
-    --card: hsl(0, 0%, 100%);
-    --card-foreground: hsl(0, 0%, 3.9%);
-    --popover: hsl(0, 0%, 100%);
-    --popover-foreground: hsl(0, 0%, 3.9%);
-    --primary: hsl(0, 0%, 9%);
-    --primary-foreground: hsl(0, 0%, 98%);
-    --secondary: hsl(0, 0%, 96.1%);
-    --secondary-foreground: hsl(0, 0%, 9%);
-    --muted: hsl(0, 0%, 96.1%);
-    --muted-foreground: hsl(0, 0%, 45.1%);
-    --accent: hsl(0, 0%, 96.1%);
-    --accent-foreground: hsl(0, 0%, 9%);
-    --destructive: hsl(0, 84.2%, 60.2%);
-    --destructive-foreground: hsl(0, 0%, 98%);
-    --border: hsl(0, 0%, 92.8%);
-    --input: hsl(0, 0%, 89.8%);
-    --ring: hsl(0, 0%, 3.9%);
-    --chart-1: hsl(12, 76%, 61%);
-    --chart-2: hsl(173, 58%, 39%);
-    --chart-3: hsl(197, 37%, 24%);
-    --chart-4: hsl(43, 74%, 66%);
-    --chart-5: hsl(27, 87%, 67%);
-    --radius: 0.5rem;
-    --sidebar-background: hsl(0, 0%, 98%);
-    --sidebar-foreground: hsl(240, 5.3%, 30%);
-    --sidebar-primary: hsl(0, 0%, 10%);
-    --sidebar-primary-foreground: hsl(0, 0%, 98%);
-    --sidebar-accent: hsl(0, 0%, 94%);
-    --sidebar-accent-foreground: hsl(0, 0%, 30%);
-    --sidebar-border: hsl(0, 0%, 91%);
-    --sidebar-ring: hsl(217.2, 91.2%, 59.8%);
-}
-
-.dark {
-    --background: hsl(0, 0%, 3.9%);
-    --foreground: hsl(0, 0%, 98%);
-    --card: hsl(0, 0%, 3.9%);
-    --card-foreground: hsl(0, 0%, 98%);
-    --popover: hsl(0, 0%, 3.9%);
-    --popover-foreground: hsl(0, 0%, 98%);
-    --primary: hsl(0, 0%, 98%);
-    --primary-foreground: hsl(0, 0%, 9%);
-    --secondary: hsl(0, 0%, 14.9%);
-    --secondary-foreground: hsl(0, 0%, 98%);
-    --muted: hsl(0, 0%, 6.9%);
-    --muted-foreground: hsl(0, 0%, 63.9%);
-    --accent: hsl(0, 0%, 14.9%);
-    --accent-foreground: hsl(0, 0%, 98%);
-    --destructive: hsl(0, 84%, 60%);
-    --destructive-foreground: hsl(0, 0%, 98%);
-    --border: hsl(0, 0%, 14.9%);
-    --input: hsl(0, 0%, 14.9%);
-    --ring: hsl(0, 0%, 83.1%);
-    --chart-1: hsl(220, 70%, 50%);
-    --chart-2: hsl(160, 60%, 45%);
-    --chart-3: hsl(30, 80%, 55%);
-    --chart-4: hsl(280, 65%, 60%);
-    --chart-5: hsl(340, 75%, 55%);
-    --sidebar-background: hsl(0, 0%, 7%);
-    --sidebar-foreground: hsl(0, 0%, 80%);
-    --sidebar-primary: hsl(360, 100%, 100%);
-    --sidebar-primary-foreground: hsl(0, 0%, 100%);
-    --sidebar-accent: hsl(0, 0%, 15.9%);
-    --sidebar-accent-foreground: hsl(240, 4.8%, 95.9%);
-    --sidebar-border: hsl(0, 0%, 15.9%);
-    --sidebar-ring: hsl(217.2, 91.2%, 59.8%);
-}
-
-@layer base {
-    * {
-        @apply border-border;
+        border-color: var(--color-border, currentColor);
     }
 
     body {
         @apply bg-background text-foreground;
+    }
+
+    /* Sin los 300ms de espera del navegador móvil. */
+    button,
+    a,
+    [role='button'],
+    label {
+        touch-action: manipulation;
+    }
+
+    /* El impacto no lo da la fuente: lo da el seteo. 800, tracking cerrado. */
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-family: var(--font-display);
+        font-optical-sizing: auto;
+        text-wrap: balance;
+        letter-spacing: -0.03em;
+        font-weight: 700;
+    }
+
+    h1 {
+        font-weight: 800;
+        letter-spacing: -0.045em;
+    }
+
+    /* Todo lo que sea plata se alinea en columna. Sin excepciones. */
+    [data-money],
+    .tabular {
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+@layer components {
+    /* ─── materiales ───
+       Un objeto lleva UN material. En cuanto una tarjeta de papel se pone brillo
+       de cerámica, el sistema se vuelve decoración. */
+
+    /* Almohadón: tejido de nudo. El único objeto que se deja hundir. */
+    .mat-almohadon {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        background-color: var(--mango-boton);
+        background-image: var(--fibra), var(--tex-nudo);
+        background-size:
+            130px 130px,
+            var(--tex-nudo-size);
+        color: var(--on-mango);
+        box-shadow:
+            inset 0 2px 1px rgb(255 255 255 / 0.3),
+            inset 0 -7px 11px -5px rgb(0 0 0 / 0.24),
+            0 5px 13px -7px oklch(0.2502 0.0214 53.96 / 0.45);
+    }
+    /* la costura, a 5px del borde */
+    .mat-almohadon::before {
+        content: '';
+        position: absolute;
+        inset: 5px;
+        z-index: -1;
+        border-radius: 16px / 11px;
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
+        pointer-events: none;
+    }
+
+    /* Pana: la tela del sillón. Cana de 9px. */
+    .mat-pana {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        background-color: var(--panel);
+        background-image: var(--fibra), var(--tex-pana);
+        background-size:
+            130px 130px,
+            auto;
+        color: var(--panel-ink);
+        box-shadow:
+            inset 0 2px 1px rgb(255 255 255 / 0.16),
+            inset 0 -6px 10px -5px rgb(0 0 0 / 0.3),
+            0 4px 11px -7px oklch(0.2502 0.0214 53.96 / 0.45);
+    }
+
+    /* Superficie permanente: fibra y luz, nunca ritmo.
+       Un patrón repetido en algo que está siempre en pantalla es un metrónomo. */
+    .mat-panel-liso {
+        background-color: var(--panel);
+        background-image: var(--luz-panel), var(--fibra);
+        background-size:
+            auto,
+            130px 130px;
+        color: var(--panel-ink);
+    }
+
+    /* Cerámica: la alternativa al almohadón. Menos volumen, vidriado de torno. */
+    .mat-ceramica {
+        background-color: var(--mango-boton);
+        background-image: var(--vidriado-torno), var(--ceramica-hi);
+        color: var(--on-mango);
+        box-shadow:
+            inset 0 0 0 1px oklch(0.2502 0.0214 53.96 / 0.22),
+            inset 0 1px 0 rgb(255 255 255 / 0.3),
+            0 2px 5px -3px oklch(0.2502 0.0214 53.96 / 0.45);
+    }
+
+    /* Papel: mate absoluto. Si la tarjeta brilla, compite con el botón. */
+    .mat-papel {
+        background-color: var(--lino);
+        border: 1px solid var(--border);
+        box-shadow: var(--sombra);
+    }
+
+    /* Vidrio: todo lo que flota. Nada más lo usa. */
+    .mat-vidrio {
+        background-color: var(--vidrio);
+        border: 1px solid var(--vidrio-borde);
+        -webkit-backdrop-filter: blur(14px) saturate(1.3);
+        backdrop-filter: blur(14px) saturate(1.3);
+        box-shadow: var(--sombra);
+    }
+
+    /* ─── el hundimiento ───
+       No es una sombra redonda: es una pared en sombra y otra iluminada.
+       Un hundimiento con centro oscuro se lee como agujero, no como volumen. */
+    .hunde {
+        --px: 50%;
+        --py: 50%;
+    }
+    .hunde::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        pointer-events: none;
+        opacity: 0;
+        /* rebote lento: la espuma tarda en volver */
+        transition: opacity 420ms cubic-bezier(0.22, 0.68, 0.32, 1);
+        background:
+            radial-gradient(
+                circle 23px at calc(var(--px) + 6px) calc(var(--py) + 7px),
+                rgb(255 255 255 / 0.17),
+                rgb(255 255 255 / 0.05) 50%,
+                transparent 74%
+            ),
+            radial-gradient(
+                circle 23px at calc(var(--px) - 6px) calc(var(--py) - 6px),
+                rgb(46 16 3 / 0.21),
+                rgb(46 16 3 / 0.06) 52%,
+                transparent 76%
+            ),
+            radial-gradient(circle 33px at var(--px) var(--py), rgb(46 16 3 / 0.09), transparent 80%),
+            /* seis y cinco pliegues. Con periodos de 23° eran veinte y parecía rayado. */
+                repeating-conic-gradient(
+                    from 8deg at var(--px) var(--py),
+                    rgb(255 255 255 / 0.11) 0deg 4deg,
+                    transparent 4deg 22deg,
+                    rgb(46 16 3 / 0.15) 22deg 27deg,
+                    transparent 27deg 60deg
+                ),
+            repeating-conic-gradient(
+                from 41deg at var(--px) var(--py),
+                rgb(46 16 3 / 0.1) 0deg 5deg,
+                transparent 5deg 34deg,
+                rgb(255 255 255 / 0.07) 34deg 38deg,
+                transparent 38deg 72deg
+            );
+        /* el radio de la máscara es lo que fija el largo de los pliegues */
+        -webkit-mask-image: radial-gradient(circle 44px at var(--px) var(--py), #000 30%, rgb(0 0 0 / 0.5) 58%, transparent 88%);
+        mask-image: radial-gradient(circle 44px at var(--px) var(--py), #000 30%, rgb(0 0 0 / 0.5) 58%, transparent 88%);
+    }
+    .hunde:active::after {
+        opacity: 1;
+        transition-duration: 80ms; /* hunde rápido */
+    }
+    .hunde:active {
+        transform: scale(0.985);
+    }
+
+    /* La pana cede menos: sobre un bloque firme la tela no se arruga, se comprime. */
+    .hunde-pana::after {
+        background:
+            radial-gradient(circle 24px at calc(var(--px) + 5px) calc(var(--py) + 6px), rgb(255 255 255 / 0.11), transparent 68%),
+            radial-gradient(circle 24px at calc(var(--px) - 5px) calc(var(--py) - 5px), rgb(0 0 0 / 0.17), transparent 72%),
+            radial-gradient(circle 36px at var(--px) var(--py), rgb(0 0 0 / 0.07), transparent 80%);
+        transition-duration: 380ms;
+    }
+    .hunde-pana:active {
+        transform: scale(0.99);
+    }
+
+    /* Superficie permanente: la textura va sin ritmo. Un patrón repetido en algo
+       que está siempre en pantalla se vuelve un metrónomo para el ojo. */
+    [data-sidebar='sidebar'] {
+        background-image: var(--luz-panel), var(--fibra);
+        background-size:
+            auto,
+            130px 130px;
+    }
+}
+
+/* ─── barra lateral ───
+   El ítem activo toma la forma de hoja y el tejido del almohadón: un almohadón
+   apoyado en el sillón. Es la única repetición de ese material.
+   Va sin @layer a propósito: las utilidades de Tailwind son una capa posterior
+   a `components` y ganarían por orden de capa aunque tengan menos especificidad. */
+.nav-activa[data-active='true'],
+.nav-activa[data-active='true']:hover {
+    border-radius: var(--radius-hoja);
+    background-color: var(--mango-boton);
+    background-image: var(--tex-nudo);
+    background-size: var(--tex-nudo-size);
+    color: var(--on-mango);
+    font-weight: 700;
+    box-shadow:
+        inset 0 2px 1px rgb(255 255 255 / 0.26),
+        inset 0 -6px 10px -5px rgb(0 0 0 / 0.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
     }
 }

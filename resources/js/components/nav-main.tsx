@@ -6,13 +6,13 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
     const page = usePage();
     return (
         <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarGroupLabel>La casa</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild isActive={item.url === page.url}>
+                        <SidebarMenuButton asChild className="nav-activa" isActive={item.url === page.url}>
                             <Link href={item.url} prefetch>
-                                {item.icon && <item.icon />}
+                                {item.icon && <item.icon aria-hidden />}
                                 <span>{item.title}</span>
                             </Link>
                         </SidebarMenuButton>
