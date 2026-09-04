@@ -194,6 +194,12 @@
     --vidriado-torno: repeating-radial-gradient(circle at 6% 152%, rgb(255 255 255 / 0.07) 0 1px, transparent 1px 6px);
     --vidrio: oklch(0.9743 0.0143 84.58 / 0.6);
     --vidrio-borde: rgb(255 255 255 / 0.55);
+
+    /* la bola de luz: una sola fuente, arriba a la derecha —la ventana—.
+       Sólo posición y color cambian por tema; el resto lo pone `.luz-ambiente`. */
+    --luz-x: 86%;
+    --luz-y: -4%;
+    --luz-color: oklch(0.87 0.08 61 / 0.5);
 }
 
 /* ─────────────────────────── OSCURO — la sala de noche ─────────────────────────── */
@@ -240,6 +246,11 @@
     --fibra: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='130'><filter id='fd'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='130' height='130' filter='url(%23fd)' opacity='0.08'/></svg>");
     --vidrio: oklch(0.202 0.0114 48.13 / 0.66);
     --vidrio-borde: rgb(255 255 255 / 0.14);
+
+    /* la lámpara: misma bola, abajo a la izquierda y más mango que sol. */
+    --luz-x: 14%;
+    --luz-y: 94%;
+    --luz-color: oklch(0.68 0.17 42 / 0.48);
 }
 
 @layer base {
@@ -451,6 +462,45 @@
         background-size:
             auto,
             130px 130px;
+    }
+
+    /* La bola de luz: ventana en modo claro, lámpara en modo oscuro. Un círculo
+       desenfocado detrás del contenido —`::before` con z-index negativo, no un
+       gradiente de fondo— para poder moverlo y respirarlo con CSS puro.
+       `left`/`top` cambian con --luz-x/--luz-y al cambiar de tema: como son
+       propiedades animables de por sí, la transición alcanza para que viaje. */
+    .luz-ambiente {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+    }
+    .luz-ambiente::before {
+        content: '';
+        position: absolute;
+        z-index: -1;
+        left: calc(var(--luz-x) - 17rem);
+        top: calc(var(--luz-y) - 17rem);
+        width: 34rem;
+        height: 34rem;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--luz-color) 0%, transparent 72%);
+        filter: blur(48px);
+        pointer-events: none;
+        transition:
+            left 1100ms cubic-bezier(0.22, 0.68, 0.32, 1),
+            top 1100ms cubic-bezier(0.22, 0.68, 0.32, 1);
+        animation: respirar-luz 8s ease-in-out infinite;
+    }
+    @keyframes respirar-luz {
+        0%,
+        100% {
+            opacity: 0.7;
+            scale: 1;
+        }
+        50% {
+            opacity: 1;
+            scale: 1.08;
+        }
     }
 }
 
