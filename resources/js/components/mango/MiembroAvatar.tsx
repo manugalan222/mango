@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 export const COLORES_MIEMBRO = ['mango', 'verde', 'ambar', 'ciruela', 'arcilla'] as const;
 export type ColorMiembro = (typeof COLORES_MIEMBRO)[number];
 
-const FONDOS: Record<ColorMiembro, string> = {
+export const FONDOS: Record<ColorMiembro, string> = {
     mango: 'bg-mango',
     verde: 'bg-verde',
     ambar: 'bg-ambar',
