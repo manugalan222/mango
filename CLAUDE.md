@@ -18,6 +18,17 @@ npx tsc --noEmit      # chequeo de tipos
 
 Íconos: **lucide**, que es lo que ya trae el kit y lo que declara `components.json`. No cambiar de librería sin una razón mejor que el gusto.
 
+## Rutas
+
+Dos archivos, según qué devuelve la ruta:
+
+- **`routes/web.php`** — sólo vistas: los `GET` que hacen `Inertia::render(...)`. Ahí vive `perfiles.index`.
+- **`routes/internal_api.php`** — las mutaciones que el propio frontend dispara vía Inertia (`store`, `update`, `destroy`), con `Route::apiResource(...)->except(['index', 'show'])`. Se registra con un `require` más en `web.php`, igual que `settings.php` y `auth.php` — **no** es la key `api` de `bootstrap/app.php`: correr ahí lo pondría bajo el stack `api` (sin sesión, sin CSRF), y el frontend manda cookie de sesión, no token. No es una API pública, es la forma de separar "vista" de "mutación" dentro de la misma app.
+
+Cada recurso nuevo repite el patrón de `perfiles`: `Enum` (si el campo lo pide) → `Model` → `FormRequest` de alta y de edición → `Service` con la lógica → `Controller` fino que delega al Service → ruta de vista en `web.php` + `apiResource` en `internal_api.php`.
+
+**Ojo con `Route::apiResource`/`Route::resource` y nombres en español:** el pluralizador de Laravel no sabe castellano — de `perfiles` saca el parámetro `{perfile}`, no `{perfil}`, y eso rompe el binding con la variable del controller. Agregar siempre `->parameters(['<recurso>' => '<singular>'])`. Le va a pasar a `tareas`, `compras`, `gastos` y `casa` cuando se arme esas rutas.
+
 ## Convención de nombres
 
 **Archivos de componentes propios: `NombreTipo.tsx`** — nombre en mayúscula seguido del tipo de componente. `TextInput`, `EstadoBadge`, `TareaRow`, `MiembroAvatar`, `BentoGrid`, `CategoriasChart`. Un componente por archivo.
