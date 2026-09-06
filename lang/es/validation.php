@@ -176,5 +176,8 @@ return [
         'current_password' => 'la contraseña actual',
         'token' => 'el token',
         'remember' => 'el recordatorio de sesión',
+        'nombre' => 'el nombre del perfil',
+        'color' => 'el color del perfil',
+        'pin' => 'el PIN',
     ],
 ];

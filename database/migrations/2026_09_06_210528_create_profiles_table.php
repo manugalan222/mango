@@ -20,6 +20,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['user_id', 'nombre']);
+            $table->unique(['user_id', 'color']);
         });
     }
 
