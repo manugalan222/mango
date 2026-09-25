@@ -58,19 +58,19 @@ Consecuencias que ya están en el código:
 
 Consecuencias pendientes:
 
-- Falta la tabla de perfiles y el selector post-login.
+- La tabla de perfiles ya existe (`Perfil`, `pages/perfiles/index.tsx`, el selector "¿Quién anda por casa?" post-registro). Falta que **elegir un perfil ahí abra sesión de perfil**: hoy el click manda directo a `/dashboard` sin guardar cuál se eligió.
 - `MiembroAvatar` y `COLORES_MIEMBRO` ya están pensados para perfiles, no para usuarios.
-- `NavUser` en el pie de la barra lateral hoy muestra la casa; va a ser el **cambiador de perfil**.
-- Cuando exista `Perfil`, la persona deja de ser `User` en todo el código.
+- `NavUser`, en la barra superior, hoy muestra la casa (Ajustes, Cerrar sesión); va a ser el **cambiador de perfil**.
+- Cuando el perfil activo viaje en sesión, la persona deja de ser `User` en todo el código de tareas/gastos.
 
 ---
 
 # Sistema de diseño
 
-Salió de fotos de living que mandó Manu, no de una búsqueda de tendencias. La tesis: **no es Memphis, es la hora dorada en una sala de living a las siete de la tarde.** Documento con el razonamiento completo, las mediciones y las alternativas descartadas:
+Arrancó de fotos de living que mandó Manu — la tesis original era **la hora dorada en una sala de living a las siete de la tarde**, con muebles como metáfora de material (almohadón, pana, cerámica). Ese documento queda como archivo, con el razonamiento y las mediciones que siguen valiendo (color, tipografía, accesibilidad):
 <https://claude.ai/code/artifact/58029993-24a3-4144-9b03-8590db9f63af>
 
-Intensidad elegida: **Amueblado** (de tres posibles: Sobrio, Amueblado, Habitado).
+**La metáfora cambió: de la casa al cuaderno de la casa.** Se dejó de simular muebles —dejó de sentirse propio y se volvía decorativo— y ahora el material es papel: tarjetas como hojas de cuaderno, contorno de tinta, sombra dura de sticker, textura de rayado y una pátina de desgaste bien tenue. El color, la tipografía y las reglas de accesibilidad de abajo **no cambiaron** — es la sección 3 (Materiales) la que se reescribió entera.
 
 **Slogan: QUE EN TU CASA NUNCA FALTE UN MANGO.** Siempre en versales. Va en la puerta de entrada y en cualquier pieza de marca; adentro de la app no se repite.
 
@@ -125,38 +125,35 @@ Verde = completado. Mango = seleccionado o urgente. Son significados distintos y
 
 | Clase | Material | Rol |
 | --- | --- | --- |
-| `.mat-almohadon` + `.hunde` | tejido de nudo | botón primario, pestaña activa |
-| `.mat-pana` + `.hunde .hunde-pana` | pana del sillón | botón secundario |
-| `.mat-panel-liso` | verde liso, fibra y caída de luz | barra lateral, panel de auth, tarjeta de logro |
-| `.mat-papel` | mate absoluto | tarjetas |
-| `.mat-ceramica` | vidriado de torno | alternativa al primario, guardada |
+| `.mat-hoja` | papel liso, contorno de tinta, sombra dura | tarjetas |
+| `.mat-hoja-oscura` | la misma hoja, sobre panel verde | la única tarjeta de logro por pantalla |
+| `.hoja-rayado` | rayado de cuaderno (pseudo-elemento, se suma a `.mat-hoja`) | la sección que necesite esa textura — nunca las dos a la vez |
+| `.mat-pegatina` + `.mat-pegatina-mango`/`-verde`/`-lino` | pastilla de tinta y sombra dura | botones (primario, secundario, alternativa guardada) |
+| `.mat-panel-liso` | verde liso, fibra y caída de luz | barra superior, panel de auth |
 | `.mat-vidrio` | desenfoque | toasts, modales |
 
-Un objeto lleva **un** material. En cuanto una tarjeta de papel se pone brillo de cerámica, el sistema se vuelve decoración.
+Un objeto lleva **un** material. La pátina de desgaste (una mancha de `--arcilla` casi insinuada, 16% de opacidad, `mix-blend-mode`) viene **incluida** en `.mat-hoja`/`.mat-hoja-oscura` — no es una clase aparte, así no hay que acordarse de sumarla tarjeta por tarjeta.
 
-**Tres reglas que costaron varias vueltas y no hay que volver a discutir:**
+**Lo que costó varias vueltas y no hay que volver a discutir:**
 
-1. La textura vive entre **4 y 11% de opacidad**. Si se lee desde lejos, está fuerte. Cada tela tiene una segunda intensidad (`--tex-*-fuerte`) que es **sólo** para plaquetas de muestra, nunca para un componente.
-2. El **ritmo** (rayas, canas, tramas) sólo en lo que se mira poco: botones, chips, sellos. Nunca en superficie permanente — un patrón repetido en algo que está siempre en pantalla es un metrónomo para el ojo. Ahí va fibra y caída de luz (`--luz-panel`), que no se repiten.
-3. El hundimiento se **ilumina**, no se dibuja: una pared en sombra y otra iluminada, desplazadas del punto de contacto, más una veladura ancha. Un centro oscuro se lee como agujero, no como volumen. Los pliegues van **debajo** del sombreado y son seis y cinco, no veinte.
+1. **Nada se hunde, todo se despega.** El sistema anterior simulaba muebles de living (almohadón, pana, cerámica) con un hundimiento que seguía el puntero. Se abandonó: dejó de sentirse propio. Ahora una tarjeta o un botón se **levantan** al pasar el mouse —`translate` + rotación mínima + la sombra dura crece— y se aplastan al clickear. Es el mismo lenguaje en toda la casa: hoja y pegatina comparten la mecánica, sólo cambian radio y tamaño de sombra.
+2. La sombra es **dura y desplazada** (`5px 6px 0 0 var(--tinta)`), nunca difusa: es lo que lee como sticker/recorte y no como elevación de Material Design.
+3. Sólo dos texturas de papel: **liso** (por defecto, sin clase) y **rayado** (`.hoja-rayado`). Se probaron cuadriculado y punteado y se sacaron por sobrecargados. La pátina de desgaste no cuenta como textura de "ritmo" —es una sola mancha, no un patrón repetido— así que puede vivir en superficie permanente sin romper la regla de siempre: ritmo sólo en lo que se mira poco, fibra y luz en lo que está siempre en pantalla.
+4. Anillos de espiral (borde de cuaderno) son un **acento ocasional**, no un material: van en una tarjeta puntual (por ejemplo, Notas) y nunca en todo un bento — si aparecen en cada tarjeta se vuelven el mismo metrónomo que ya se evitó con fibra y luz.
 
 ### Arriba y abajo
 
-El botón está **apoyado** sobre el papel: luz arriba, sombra proyectada abajo.
-El input está **hundido** en el papel: sombra interior, sin elevación.
-Es la única señal de affordance que necesita el sistema.
+El botón y la tarjeta están **apoyados**, no hundidos: contorno de tinta, sombra proyectada que se agranda al pasar el mouse. El input sigue **hundido** en el papel —sombra interior, sin elevación— porque ahí el hundimiento comunica "esto se llena", no "esto es un mueble". Es la única señal de affordance que necesita el sistema.
 
 ## 4. Formas — una por rol
 
-`rounded-almohadon` (22/16, botones) · `rounded-lg` (11px, inputs, filas, chips de fecha) · `rounded-placa` (16px, tarjetas) · `rounded-full` (etiquetas de estado) · `rounded-hoja` (marca: avatar, nav activa, sello) · `rounded-arco` (marcos de ilustración).
-
-El radio del almohadón es **más ancho que alto** a propósito: eso es lo que lo hace leer relleno y no cortado.
+`rounded-full` (botones, etiquetas de estado) · `rounded-lg` (11px, inputs, filas, chips de fecha) · `rounded-placa` (16px, tarjetas) · `rounded-hoja` (marca: avatar, sello).
 
 ## 5. Movimiento
 
 120ms hover · 150ms cambios de color · 180ms check de tarea · 240ms entrada de tarjeta · stagger 0,03s con `y:8px`.
 
-Salida más rápida que entrada, **salvo el hundimiento**: 80ms para hundirse y 420ms para volver (380ms la pana), porque la espuma tarda en recuperarse. Nada de `bounce`: es el equivalente animado de Memphis.
+**El rebote ya no está prohibido.** La regla anterior ("nada de `bounce`, es Memphis animado") se revisó a propósito: el sistema dejó de perseguir sobriedad de mueble y ahora es caricaturesco a propósito. Tarjetas y botones usan `cubic-bezier(0.34, 1.56, 0.64, 1)` —un rebote real, no lineal— al levantarse (160–180ms) y un aplastamiento seco al clickear. Sigue habiendo una sola fuente de rebote en pantalla a la vez: no hace falta que todo bote todo el tiempo para que se sienta vivo.
 
 Todo detrás de `prefers-reduced-motion`, ya cubierto globalmente en `app.css`.
 
@@ -209,7 +206,9 @@ El array `attributes` de `lang/es/validation.php` nombra los campos **con artíc
 | `SelloBadge.tsx` | logro, en forma de hoja |
 | `MiembroAvatar.tsx` | identidad de cada conviviente (+ `COLORES_MIEMBRO`) |
 | `BentoGrid.tsx` | muro de galería de 6 columnas |
-| `PanelCard.tsx` | tarjeta de papel, anchos 2/3/4 |
+| `PanelCard.tsx` | hoja de cuaderno, anchos 2/3/4, `textura="liso"\|"rayado"` |
+| `EstadoVacio.tsx` | ícono + qué falta + acción, para cuando todavía no hay datos reales |
+| `SeccionTabs.tsx` | el board con pestañas de una sección (Finanzas, Hogar), sincroniza `?tab=` |
 | `FilasList.tsx` | lista de filas |
 | `FilaItem.tsx` | fila con punteada |
 | `TareaRow.tsx` | quehacer marcable |
@@ -225,28 +224,28 @@ Las barras llevan **etiqueta directa** en cada una: nadie tiene que cruzar una l
 
 ## De shadcn — modificados
 
-`ui/button.tsx` (variantes `almohadon`, `pana`, `ceramica` + el hundimiento que sigue al puntero), `ui/input.tsx` (hundido), `ui/checkbox.tsx` (forma del sistema), `ui/label.tsx`, `input-error.tsx`, `text-link.tsx`.
+`ui/button.tsx` (variantes `almohadon`, `pana`, `ceramica` sobre `.mat-pegatina`; las claves de variante no cambiaron aunque el material sí, para no tener que tocar cada call site), `ui/input.tsx` (hundido), `ui/checkbox.tsx` (forma del sistema), `ui/label.tsx`, `input-error.tsx`, `text-link.tsx`, `ui/tabs.tsx` (restyleado para `SeccionTabs`, agregado con el CLI de shadcn).
 
-El hundimiento escribe `--px`/`--py` **una sola vez en `pointerdown`**: mover el gradiente repinta, así que seguir el puntero cuadro a cuadro sacaría el efecto del compositor. Después sólo se anima `opacity`.
+## Navegación
+
+`components/app-header.tsx` — la barra superior, estilo Netflix: no hay sidebar. Logo pegado a la esquina izquierda, los tres destinos (`nav-main.tsx`) con aire entre sí, luz + perfil + cerrar sesión a la derecha. La sección activa **no** se rellena — eso era la pastilla `rounded-hoja` del sistema viejo — se subraya: cada link lleva un `<svg>` con un único `path` en zigzag (uno distinto por destino, no la misma línea repetida) que se dibuja de punta a punta al activarse vía `stroke-dashoffset` (`.subrayado` en `app.css`). El color del link activo es `panel-ink` pleno; ojo con reusar `on-mango` para texto suelto sobre el panel — está pensado para texto sobre un relleno mango y en modo oscuro es casi negro, no lee sobre verde.
+
+`layouts/app/app-header-layout.tsx` es el único layout de app; no hay variante de sidebar.
 
 ## Layouts
 
-- `layouts/auth/auth-simple-layout.tsx` — **la puerta.** Fondo verde **plano**: es lo único de todo el sistema que no lleva material, porque todavía no estás adentro de la casa. El slogan arriba, como el cartel sobre la puerta. El formulario vive dentro de un arco de luz cálida — una puerta abierta vista desde afuera.
-
-  El arco es un **semicírculo exacto**: el radio superior es la mitad del ancho del panel (11,5rem sobre 23rem). Con un radio menor deja un tramo recto arriba y se lee como rectángulo redondeado, no como arco. Si cambia el ancho del panel, el radio tiene que cambiar con él.
+- `layouts/auth/auth-simple-layout.tsx` — **la puerta.** Fondo verde **plano**: es lo único de todo el sistema que no lleva material, porque todavía no estás adentro de la casa. El slogan arriba, como el cartel sobre la puerta. El formulario vive en una **hoja de cuaderno** (`.mat-hoja.hoja-rayado`) apoyada sobre esa luz —ya no en un arco: el arco simulaba una puerta, y esa metáfora de casa se dejó junto con los muebles.
 
   El centrado usa `m-auto`, no `justify-center`: si el formulario es más alto que la pantalla, `justify-center` recorta el borde de arriba y no se puede llegar scrolleando.
-- `layouts/app/app-sidebar-layout.tsx` — sin cambios estructurales; la barra lateral toma el estilo desde `app.css`.
-
-La clase `.nav-activa` va **sin `@layer`** a propósito: las utilidades de Tailwind son una capa posterior a `components` y ganarían por orden de capa aunque tengan menos especificidad.
+- `layouts/app/app-header-layout.tsx` — la barra superior toma el estilo desde `app.css`.
 
 ---
 
 # Pendiente
 
-- **La hoja partida** (símbolo) y **Carozo** (mascota) están sin rediseñar. Los conceptos están aprobados; los dibujos actuales se ven infantiles y de bajo costo. `marca.tsx` aísla la hoja a propósito: rediseñarla es cambiar un archivo, y todo lo que la usa (avatar, pestaña activa, sello, logotipo) se actualiza solo.
-- `/plata`, `/tareas`, `/compras` y `/casa` están en la nav pero no tienen ruta.
-- `pages/dashboard.tsx` es un placeholder de 20 líneas. **No se puede borrar:** `route('dashboard')` es el destino al que Laravel manda después del login y del registro. La maqueta con datos de ejemplo que había ahí se desarmó entera en `components/mango/`; no quedó nada de ella en las páginas.
-- Falta el modelo de datos: casa, convivientes, gastos, tareas, vencimientos.
-- Un solo error de TypeScript preexistente: `welcome.tsx` usa `mix-blend-mode: 'plus-darker'`, que no está en los tipos de React. Esa página es la de bienvenida del starter y hay que reemplazarla.
-- Se borraron los archivos muertos del starter kit: los dos layouts de auth alternativos, el layout de app con encabezado, `app-header`, `app-logo-icon` (el logo de Laravel), `appearance-dropdown`, `nav-footer` y `placeholder-pattern` (que existía sólo para rellenar la maqueta). Ninguno tenía referencias.
+- **La hoja partida** (símbolo) y **Carozo** (mascota) están sin rediseñar. Los conceptos están aprobados; los dibujos actuales se ven infantiles y de bajo costo. `HojaIcon.tsx` aísla la hoja a propósito: rediseñarla es cambiar un archivo, y todo lo que la usa (avatar, sello, logotipo) se actualiza solo.
+- `/dashboard`, `/finanzas` y `/hogar` tienen ruta y página real, pero Finanzas y Hogar son estados vacíos honestos —sin datos hardcodeados— porque todavía no existe el modelo de gastos/deudas/ahorros/tareas/notas detrás. El dashboard igual, salvo los avatares de perfiles, que ya son datos reales.
+- Falta el modelo de datos: gastos, deudas, ahorros, tareas, notas y sus vencimientos. `Perfil` (convivientes) ya existe.
+- Falta que elegir un perfil en `/perfiles` abra sesión de perfil de verdad (ver "El modelo: el usuario es la casa" más arriba).
+- `welcome.tsx` y la bienvenida de Laravel/Inertia en `/` se sacaron: la raíz ahora redirige a `/dashboard` o `/login` según haya sesión. De paso se fue el único error de TypeScript preexistente que traía esa página (`mix-blend-mode: 'plus-darker'`).
+- Se borraron, en distintos momentos, los archivos muertos del starter kit y del sistema de living retirado: los layouts de auth alternativos, el sidebar completo (`app-sidebar.tsx`, `nav-main` viejo, `ui/sidebar.tsx`, `use-mobile.tsx`), `app-logo-icon`, `appearance-dropdown`, `nav-footer`, `placeholder-pattern`, y en `app.css` los materiales de living (`mat-almohadon`, `mat-pana`, `mat-ceramica`, `mat-papel`, el mecanismo `.hunde`) con sus tokens (`--tex-nudo`, `--tex-pana`, `--ceramica-hi`, `--vidriado-torno`, `--radius-almohadon`, `--radius-arco`). Ninguno tenía referencias después del cambio que lo dejó obsoleto.

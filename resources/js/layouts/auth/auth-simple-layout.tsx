@@ -15,8 +15,9 @@ interface AuthLayoutProps {
  * Fondo verde plano — sin fibra, sin trama: es lo único de todo el sistema que
  * no lleva material, porque acá no estás adentro de la casa todavía. Sí lleva
  * `luz-ambiente`: la luz que se cuela antes de entrar, ventana en modo claro y
- * lámpara en modo oscuro. El formulario vive dentro de un arco de luz cálida:
- * una puerta abierta vista desde afuera.
+ * lámpara en modo oscuro. El formulario vive en una hoja de cuaderno a medio
+ * llenar —rayado tenue, la misma tarjeta que el resto de la casa— apoyada
+ * sobre esa luz, no en un arco.
  *
  * El slogan va arriba, como el cartel sobre la puerta.
  */
@@ -32,7 +33,7 @@ export default function AuthSimpleLayout({ children, title, description }: AuthL
                     Que en tu casa nunca falte un mango
                 </p>
 
-                <div className="bg-background w-full max-w-[23rem] rounded-[11.5rem_11.5rem_1rem_1rem] px-8 pt-[4.5rem] pb-9 shadow-[0_28px_64px_-32px_rgb(0_0_0/0.65)]">
+                <div className="mat-hoja hoja-rayado rounded-placa w-full max-w-[23rem] px-8 py-9">
                     <div className="flex flex-col gap-6">
                         <div className="flex flex-col items-center gap-2 text-center">
                             <Link

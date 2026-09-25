@@ -22,9 +22,7 @@
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
     --radius-placa: 1rem; /* tarjetas y paneles */
-    --radius-almohadon: 22px / 16px; /* botones: más ancho que alto, se lee relleno */
-    --radius-hoja: 50% 8px 50% 8px; /* marca: avatar, nav activa, sello */
-    --radius-arco: 999px 999px 12px 12px; /* marcos de ilustración */
+    --radius-hoja: 50% 8px 50% 8px; /* marca: avatar, sello */
 
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -171,27 +169,11 @@
     /* sombras teñidas de espresso: una sombra gris sobre fondo cálido se ve sucia */
     --sombra: 0 1px 2px oklch(0.2502 0.0214 53.96 / 0.05), 0 8px 24px -12px oklch(0.2502 0.0214 53.96 / 0.18);
 
-    /* texturas — dos intensidades. La de componente vive entre 4 y 11%;
-       la de muestra sólo se usa en documentación de materiales. */
-    --tex-nudo:
-        radial-gradient(circle at 1.5px 1.5px, rgb(255 255 255 / 0.075) 1px, transparent 1.7px),
-        radial-gradient(circle at 3px 5px, rgb(0 0 0 / 0.07) 1.1px, transparent 1.9px),
-        radial-gradient(circle at 6px 2px, rgb(255 255 255 / 0.042) 0.9px, transparent 1.5px),
-        radial-gradient(circle at 8px 7px, rgb(0 0 0 / 0.05) 1px, transparent 1.8px);
-    --tex-nudo-size: 11px 11px, 13px 13px, 9px 9px, 15px 15px;
-    --tex-pana: repeating-linear-gradient(
-        90deg,
-        rgb(0 0 0 / 0.115) 0px,
-        rgb(0 0 0 / 0.012) 2.4px,
-        rgb(255 255 255 / 0.052) 4.6px,
-        rgb(0 0 0 / 0.012) 6.8px,
-        rgb(0 0 0 / 0.115) 9px
-    );
+    /* textura de la barra superior — vive entre 4 y 11% de opacidad, como toda
+       textura de superficie permanente. */
     --fibra: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='130'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='130' height='130' filter='url(%23f)' opacity='0.11'/></svg>");
     /* caída de lámpara: no se repite, por eso puede vivir en superficie permanente */
     --luz-panel: radial-gradient(130% 76% at 22% -6%, rgb(255 255 255 / 0.055), transparent 64%);
-    --ceramica-hi: linear-gradient(180deg, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0) 46%);
-    --vidriado-torno: repeating-radial-gradient(circle at 6% 152%, rgb(255 255 255 / 0.07) 0 1px, transparent 1px 6px);
     --vidrio: oklch(0.9743 0.0143 84.58 / 0.6);
     --vidrio-borde: rgb(255 255 255 / 0.55);
 
@@ -300,51 +282,110 @@
 
 @layer components {
     /* ─── materiales ───
-       Un objeto lleva UN material. En cuanto una tarjeta de papel se pone brillo
-       de cerámica, el sistema se vuelve decoración. */
+       De la casa de living al cuaderno de la casa: un objeto lleva UN material,
+       y acá el material es papel. Rectángulo sobrio, contorno de tinta grueso,
+       sombra dura desplazada en vez de difusa —como una hoja apoyada, no un
+       mueble tapizado. */
 
-    /* Almohadón: tejido de nudo. El único objeto que se deja hundir. */
-    .mat-almohadon {
+    /* Hoja: la tarjeta. Contorno de tinta, sombra de sticker, se levanta al
+       pasar el mouse en vez de hundirse —acá nada se hunde, todo se despega. */
+    .mat-hoja {
         position: relative;
         isolation: isolate;
-        overflow: hidden;
-        background-color: var(--mango-boton);
-        background-image: var(--fibra), var(--tex-nudo);
-        background-size:
-            130px 130px,
-            var(--tex-nudo-size);
-        color: var(--on-mango);
-        box-shadow:
-            inset 0 2px 1px rgb(255 255 255 / 0.3),
-            inset 0 -7px 11px -5px rgb(0 0 0 / 0.24),
-            0 5px 13px -7px oklch(0.2502 0.0214 53.96 / 0.45);
+        background-color: var(--lino);
+        color: var(--tinta);
+        border: 2.5px solid var(--tinta);
+        box-shadow: 5px 6px 0 0 var(--tinta);
+        transition:
+            transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1),
+            box-shadow 180ms ease;
     }
-    /* la costura, a 5px del borde */
-    .mat-almohadon::before {
+    /* la pátina de cuaderno viejo: una sola mancha casi insinuada, siempre
+       encendida —es parte del material, no un modificador aparte. */
+    .mat-hoja::after {
         content: '';
         position: absolute;
-        inset: 5px;
+        inset: 0;
         z-index: -1;
-        border-radius: 16px / 11px;
-        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
+        border-radius: inherit;
         pointer-events: none;
+        mix-blend-mode: multiply;
+        opacity: 0.16;
+        background-image: radial-gradient(120px 90px at 92% 8%, color-mix(in oklch, var(--arcilla) 55%, transparent) 0%, transparent 70%);
+    }
+    .mat-hoja:hover {
+        transform: translate(-3px, -4px) rotate(-0.3deg);
+        box-shadow: 8px 9px 0 0 var(--tinta);
+    }
+    .mat-hoja:active {
+        transform: translate(-1px, -1px) rotate(0deg);
+        box-shadow: 3px 4px 0 0 var(--tinta);
     }
 
-    /* Pana: la tela del sillón. Cana de 9px. */
-    .mat-pana {
-        position: relative;
-        isolation: isolate;
-        overflow: hidden;
+    /* La misma hoja, sobre panel verde: para la única tarjeta de logro por pantalla. */
+    .mat-hoja-oscura {
         background-color: var(--panel);
-        background-image: var(--fibra), var(--tex-pana);
-        background-size:
-            130px 130px,
-            auto;
         color: var(--panel-ink);
-        box-shadow:
-            inset 0 2px 1px rgb(255 255 255 / 0.16),
-            inset 0 -6px 10px -5px rgb(0 0 0 / 0.3),
-            0 4px 11px -7px oklch(0.2502 0.0214 53.96 / 0.45);
+        border-color: var(--panel-ink);
+        box-shadow: 5px 6px 0 0 var(--panel-ink);
+    }
+    .mat-hoja-oscura:hover {
+        box-shadow: 8px 9px 0 0 var(--panel-ink);
+    }
+    .mat-hoja-oscura:active {
+        box-shadow: 3px 4px 0 0 var(--panel-ink);
+    }
+    .mat-hoja-oscura::after {
+        mix-blend-mode: screen;
+    }
+
+    /* Pegatina: el botón. Misma lógica que la hoja pero en pastilla, con un
+       empujón elástico al pasar el mouse en vez de reposo, y se aplana al
+       clickear —la pegatina se despega y vuelve a pegar. */
+    .mat-pegatina {
+        position: relative;
+        border: 2.5px solid var(--tinta);
+        box-shadow: 4px 4px 0 0 var(--tinta);
+        transition:
+            transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1),
+            box-shadow 160ms ease;
+    }
+    .mat-pegatina:hover {
+        transform: translate(-2px, -2px) rotate(-0.6deg);
+        box-shadow: 6px 6px 0 0 var(--tinta);
+    }
+    .mat-pegatina:active {
+        transform: translate(1px, 1px) rotate(0deg);
+        box-shadow: 2px 2px 0 0 var(--tinta);
+    }
+    .mat-pegatina-mango {
+        background-color: var(--mango-boton);
+        color: var(--on-mango);
+    }
+    .mat-pegatina-verde {
+        background-color: var(--verde-dato);
+        color: var(--on-mango);
+    }
+    .mat-pegatina-lino {
+        background-color: var(--lino);
+        color: var(--tinta);
+    }
+
+    /* Rayado: la única textura de papel además de liso. Va como pseudo-elemento
+       para no gastar un nodo por tarjeta; z-index negativo, la pinta detrás del
+       contenido sin que haga falta tocar el z-index de cada hijo. */
+    .hoja-rayado::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        pointer-events: none;
+        background-image: repeating-linear-gradient(to bottom, transparent 0 26px, color-mix(in oklch, var(--tinta) 15%, transparent) 26px 27px);
+        background-position: 0 46px;
+    }
+    .mat-hoja-oscura.hoja-rayado::before {
+        background-image: repeating-linear-gradient(to bottom, transparent 0 26px, color-mix(in oklch, var(--panel-ink) 12%, transparent) 26px 27px);
     }
 
     /* Superficie permanente: fibra y luz, nunca ritmo.
@@ -358,24 +399,6 @@
         color: var(--panel-ink);
     }
 
-    /* Cerámica: la alternativa al almohadón. Menos volumen, vidriado de torno. */
-    .mat-ceramica {
-        background-color: var(--mango-boton);
-        background-image: var(--vidriado-torno), var(--ceramica-hi);
-        color: var(--on-mango);
-        box-shadow:
-            inset 0 0 0 1px oklch(0.2502 0.0214 53.96 / 0.22),
-            inset 0 1px 0 rgb(255 255 255 / 0.3),
-            0 2px 5px -3px oklch(0.2502 0.0214 53.96 / 0.45);
-    }
-
-    /* Papel: mate absoluto. Si la tarjeta brilla, compite con el botón. */
-    .mat-papel {
-        background-color: var(--lino);
-        border: 1px solid var(--border);
-        box-shadow: var(--sombra);
-    }
-
     /* Vidrio: todo lo que flota. Nada más lo usa. */
     .mat-vidrio {
         background-color: var(--vidrio);
@@ -383,85 +406,6 @@
         -webkit-backdrop-filter: blur(14px) saturate(1.3);
         backdrop-filter: blur(14px) saturate(1.3);
         box-shadow: var(--sombra);
-    }
-
-    /* ─── el hundimiento ───
-       No es una sombra redonda: es una pared en sombra y otra iluminada.
-       Un hundimiento con centro oscuro se lee como agujero, no como volumen. */
-    .hunde {
-        --px: 50%;
-        --py: 50%;
-    }
-    .hunde::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        border-radius: inherit;
-        pointer-events: none;
-        opacity: 0;
-        /* rebote lento: la espuma tarda en volver */
-        transition: opacity 420ms cubic-bezier(0.22, 0.68, 0.32, 1);
-        background:
-            radial-gradient(
-                circle 23px at calc(var(--px) + 6px) calc(var(--py) + 7px),
-                rgb(255 255 255 / 0.17),
-                rgb(255 255 255 / 0.05) 50%,
-                transparent 74%
-            ),
-            radial-gradient(
-                circle 23px at calc(var(--px) - 6px) calc(var(--py) - 6px),
-                rgb(46 16 3 / 0.21),
-                rgb(46 16 3 / 0.06) 52%,
-                transparent 76%
-            ),
-            radial-gradient(circle 33px at var(--px) var(--py), rgb(46 16 3 / 0.09), transparent 80%),
-            /* seis y cinco pliegues. Con periodos de 23° eran veinte y parecía rayado. */
-                repeating-conic-gradient(
-                    from 8deg at var(--px) var(--py),
-                    rgb(255 255 255 / 0.11) 0deg 4deg,
-                    transparent 4deg 22deg,
-                    rgb(46 16 3 / 0.15) 22deg 27deg,
-                    transparent 27deg 60deg
-                ),
-            repeating-conic-gradient(
-                from 41deg at var(--px) var(--py),
-                rgb(46 16 3 / 0.1) 0deg 5deg,
-                transparent 5deg 34deg,
-                rgb(255 255 255 / 0.07) 34deg 38deg,
-                transparent 38deg 72deg
-            );
-        /* el radio de la máscara es lo que fija el largo de los pliegues */
-        -webkit-mask-image: radial-gradient(circle 44px at var(--px) var(--py), #000 30%, rgb(0 0 0 / 0.5) 58%, transparent 88%);
-        mask-image: radial-gradient(circle 44px at var(--px) var(--py), #000 30%, rgb(0 0 0 / 0.5) 58%, transparent 88%);
-    }
-    .hunde:active::after {
-        opacity: 1;
-        transition-duration: 80ms; /* hunde rápido */
-    }
-    .hunde:active {
-        transform: scale(0.985);
-    }
-
-    /* La pana cede menos: sobre un bloque firme la tela no se arruga, se comprime. */
-    .hunde-pana::after {
-        background:
-            radial-gradient(circle 24px at calc(var(--px) + 5px) calc(var(--py) + 6px), rgb(255 255 255 / 0.11), transparent 68%),
-            radial-gradient(circle 24px at calc(var(--px) - 5px) calc(var(--py) - 5px), rgb(0 0 0 / 0.17), transparent 72%),
-            radial-gradient(circle 36px at var(--px) var(--py), rgb(0 0 0 / 0.07), transparent 80%);
-        transition-duration: 380ms;
-    }
-    .hunde-pana:active {
-        transform: scale(0.99);
-    }
-
-    /* Superficie permanente: la textura va sin ritmo. Un patrón repetido en algo
-       que está siempre en pantalla se vuelve un metrónomo para el ojo. */
-    [data-sidebar='sidebar'] {
-        background-image: var(--luz-panel), var(--fibra);
-        background-size:
-            auto,
-            130px 130px;
     }
 
     /* La bola de luz: ventana en modo claro, lámpara en modo oscuro. Un círculo
@@ -504,22 +448,32 @@
     }
 }
 
-/* ─── barra lateral ───
-   El ítem activo toma la forma de hoja y el tejido del almohadón: un almohadón
-   apoyado en el sillón. Es la única repetición de ese material.
-   Va sin @layer a propósito: las utilidades de Tailwind son una capa posterior
-   a `components` y ganarían por orden de capa aunque tengan menos especificidad. */
-.nav-activa[data-active='true'],
-.nav-activa[data-active='true']:hover {
-    border-radius: var(--radius-hoja);
-    background-color: var(--mango-boton);
-    background-image: var(--tex-nudo);
-    background-size: var(--tex-nudo-size);
-    color: var(--on-mango);
-    font-weight: 700;
-    box-shadow:
-        inset 0 2px 1px rgb(255 255 255 / 0.26),
-        inset 0 -6px 10px -5px rgb(0 0 0 / 0.2);
+@layer components {
+    /* ─── barra superior: la sección activa se subraya, no se rellena ───
+       Un solo trazo en zigzag (un único `path`, no una línea recta) que se
+       dibuja de punta a punta al activarse, como si se remarcara a lápiz. */
+    .subrayado {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 4px;
+        height: 11px;
+        overflow: visible;
+        pointer-events: none;
+    }
+    .subrayado path {
+        fill: none;
+        stroke: var(--mango);
+        stroke-width: 2.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+        transition: stroke-dashoffset 320ms ease-out;
+    }
+    [data-active='true'] .subrayado path {
+        stroke-dashoffset: 0;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

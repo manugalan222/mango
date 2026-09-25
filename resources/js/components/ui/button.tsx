@@ -9,19 +9,19 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                // Primario. Tejido de nudo, costura y punto de presión.
-                default: 'mat-almohadon hunde rounded-almohadon hover:brightness-105',
-                almohadon: 'mat-almohadon hunde rounded-almohadon hover:brightness-105',
-                // Secundario. La pana del sillón: cede menos y vuelve antes.
-                pana: 'mat-pana hunde hunde-pana rounded-almohadon hover:brightness-110',
-                // Alternativa al primario, guardada: menos volumen, vidriado de torno.
-                ceramica: 'mat-ceramica rounded-lg hover:brightness-105 active:translate-y-px',
+                // Primario. Pastilla de tinta y sombra dura, se levanta al pasar el mouse.
+                default: 'mat-pegatina mat-pegatina-mango rounded-full',
+                almohadon: 'mat-pegatina mat-pegatina-mango rounded-full',
+                // Secundario. Mismo trato, relleno verde.
+                pana: 'mat-pegatina mat-pegatina-verde rounded-full',
+                // Alternativa al primario, guardada: relleno papel.
+                ceramica: 'mat-pegatina mat-pegatina-lino rounded-full',
                 outline: 'rounded-lg border-[1.5px] border-input bg-transparent text-foreground hover:border-mango-texto hover:bg-accent hover:text-accent-foreground',
                 ghost: 'rounded-lg text-mango-texto hover:bg-accent',
                 destructive: 'rounded-lg bg-destructive text-destructive-foreground hover:brightness-110',
                 link: 'text-mango-texto underline-offset-4 hover:underline',
                 // Conservados por compatibilidad con el starter kit.
-                secondary: 'mat-pana hunde hunde-pana rounded-almohadon hover:brightness-110',
+                secondary: 'mat-pegatina mat-pegatina-verde rounded-full',
             },
             size: {
                 default: 'h-11 px-[1.25rem] py-2',
@@ -37,56 +37,15 @@ const buttonVariants = cva(
     },
 );
 
-/** Variantes cuyo hundimiento sigue al puntero. */
-const SIGUE_AL_DEDO = new Set(['default', 'almohadon', 'pana', 'secondary']);
-
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
     asChild?: boolean;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant, size, asChild = false, onPointerDown, onKeyDown, ...props }, ref) => {
-        const Comp = asChild ? Slot : 'button';
-        const hunde = SIGUE_AL_DEDO.has(variant ?? 'default');
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : 'button';
 
-        // Se escribe una sola vez por pulsación: mover el gradiente repinta, así que
-        // seguir el puntero cuadro a cuadro sacaría el efecto del compositor.
-        // Después sólo se anima `opacity`.
-        const marcarPunto = React.useCallback(
-            (event: React.PointerEvent<HTMLButtonElement>) => {
-                if (hunde) {
-                    const caja = event.currentTarget.getBoundingClientRect();
-                    event.currentTarget.style.setProperty('--px', `${(event.clientX - caja.left).toFixed(1)}px`);
-                    event.currentTarget.style.setProperty('--py', `${(event.clientY - caja.top).toFixed(1)}px`);
-                }
-                onPointerDown?.(event);
-            },
-            [hunde, onPointerDown],
-        );
-
-        // Con teclado no hay coordenada: el hundimiento cae en el centro, que ahí es lo correcto.
-        const centrarPunto = React.useCallback(
-            (event: React.KeyboardEvent<HTMLButtonElement>) => {
-                if (hunde && (event.key === ' ' || event.key === 'Enter')) {
-                    event.currentTarget.style.removeProperty('--px');
-                    event.currentTarget.style.removeProperty('--py');
-                }
-                onKeyDown?.(event);
-            },
-            [hunde, onKeyDown],
-        );
-
-        return (
-            <Comp
-                className={cn(buttonVariants({ variant, size, className }))}
-                ref={ref}
-                onPointerDown={marcarPunto}
-                onKeyDown={centrarPunto}
-                {...props}
-            />
-        );
-    },
-);
+    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+});
 Button.displayName = 'Button';
 
 export { Button, buttonVariants };
