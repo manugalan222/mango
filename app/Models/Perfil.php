@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ColorPerfil;
 use Database\Factories\PerfilFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,6 +39,16 @@ class Perfil extends Model
     ];
 
     /**
+     * El hash del PIN nunca viaja al frontend, pero el selector de perfiles
+     * necesita saber si tiene que pedirlo.
+     *
+     * @var list<string>
+     */
+    protected $appends = [
+        'tiene_pin',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -48,6 +59,11 @@ class Perfil extends Model
             'color' => ColorPerfil::class,
             'pin' => 'hashed',
         ];
+    }
+
+    protected function tienePin(): Attribute
+    {
+        return Attribute::get(fn () => $this->pin !== null);
     }
 
     public function user(): BelongsTo

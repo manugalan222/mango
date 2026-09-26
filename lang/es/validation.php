@@ -179,6 +179,7 @@ return [
         'nombre' => 'el nombre del perfil',
         'color' => 'el color del perfil',
         'pin' => 'el PIN',
+        'quitar_pin' => 'si se quita el PIN',
         'titulo' => 'el título',
         'contenido' => 'el contenido',
         'fijada' => 'si está fijada',

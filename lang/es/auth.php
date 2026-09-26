@@ -9,5 +9,6 @@ return [
     'failed' => 'No hay ninguna casa con ese correo y esa contraseña.',
     'password' => 'La contraseña no es correcta.',
     'throttle' => 'Demasiados intentos. Probá de nuevo en :seconds segundos.',
+    'pin' => 'El PIN no coincide. Revisalo y probá de nuevo.',
 
 ];

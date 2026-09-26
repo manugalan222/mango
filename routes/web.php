@@ -18,7 +18,9 @@ Route::get('/', function (Request $request) {
     return $request->user() ? redirect()->route('dashboard') : redirect()->route('login');
 })->name('home');
 
-Route::middleware(['auth'])->group(function () {
+// Adentro de la casa hace falta, además de la sesión de la casa, un perfil
+// elegido. `/perfiles` queda afuera: es donde se elige.
+Route::middleware(['auth', 'perfil'])->group(function () {
     Route::get('dashboard', function (Request $request, PerfilService $perfiles) {
         return Inertia::render('dashboard', [
             'perfiles' => $perfiles->listarDeCasa($request->user()),
@@ -40,7 +42,9 @@ Route::middleware(['auth'])->group(function () {
             'tareas' => $tareas->listarDeCasa($request->user()),
         ]);
     })->name('hogar.index');
+});
 
+Route::middleware(['auth'])->group(function () {
     Route::get('perfiles', [PerfilController::class, 'index'])->name('perfiles.index');
 });
 

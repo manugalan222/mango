@@ -2,6 +2,8 @@ import { type ColorMiembro } from '@/components/mango/MiembroAvatar';
 
 export interface Auth {
     user: User;
+    /** El conviviente elegido en "¿Quién anda por casa?". `null` hasta elegir. */
+    perfil: Perfil | null;
 }
 
 export interface BreadcrumbItem {
@@ -37,11 +39,12 @@ export interface SharedData {
  */
 export type Casa = User;
 
-/** Un conviviente dentro de la casa. El PIN nunca viaja al frontend. */
+/** Un conviviente dentro de la casa. El PIN nunca viaja al frontend: sólo si tiene uno. */
 export interface Perfil {
     id: number;
     nombre: string;
     color: ColorMiembro;
+    tiene_pin: boolean;
     user_id: number;
     created_at: string;
     updated_at: string;

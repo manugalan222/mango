@@ -60,7 +60,8 @@ Consecuencias que ya están en el código:
 
 Consecuencias pendientes:
 
-- La tabla de perfiles ya existe (`Perfil`, `pages/perfiles/index.tsx`, el selector "¿Quién anda por casa?" post-registro). Falta que **elegir un perfil ahí abra sesión de perfil**: hoy el click manda directo a `/dashboard` sin guardar cuál se eligió.
+- La tabla de perfiles ya existe (`Perfil`, `pages/perfiles/index.tsx`, el selector "¿Quién anda por casa?" post-registro). Elegir un perfil hace `POST perfiles/{perfil}/entrar` (hook `use-entrar-perfil`): si tiene PIN lo pide, lo chequea el `PerfilService` (5 intentos por perfil y espera) y guarda `perfil_id` en sesión. El middleware `perfil` (`EnsurePerfilElegido`) cuida `/dashboard`, `/finanzas` y `/hogar`; sin perfil válido vuelve a `/perfiles`. El perfil activo viaja como `auth.perfil`.
+- El PIN se guarda hasheado y nunca viaja al front: sólo `tiene_pin`. Editar con el PIN vacío **lo conserva**; para sacarlo se manda `quitar_pin`.
 - `MiembroAvatar` y `COLORES_MIEMBRO` ya están pensados para perfiles, no para usuarios.
 - `NavUser`, en la barra superior, hoy muestra la casa (Ajustes, Cerrar sesión); va a ser el **cambiador de perfil**.
 - Cuando el perfil activo viaje en sesión, la persona deja de ser `User` en todo el código de tareas/gastos.
@@ -259,6 +260,5 @@ Los destinos van **sin íconos**, sólo el nombre en la display (700, activo 800
 - **La hoja partida** (símbolo) y **Carozo** (mascota) están sin rediseñar. Los conceptos están aprobados; los dibujos actuales se ven infantiles y de bajo costo. `HojaIcon.tsx` aísla la hoja a propósito: rediseñarla es cambiar un archivo, y todo lo que la usa (avatar, sello, logotipo) se actualiza solo.
 - `/dashboard`, `/finanzas` y `/hogar` tienen ruta y página real, pero Finanzas y Hogar son estados vacíos honestos —sin datos hardcodeados— porque todavía no existe el modelo de gastos/deudas/ahorros/tareas/notas detrás. El dashboard igual, salvo los avatares de perfiles, que ya son datos reales.
 - Falta el modelo de datos: gastos, deudas, ahorros, tareas, notas y sus vencimientos. `Perfil` (convivientes) ya existe.
-- Falta que elegir un perfil en `/perfiles` abra sesión de perfil de verdad (ver "El modelo: el usuario es la casa" más arriba).
 - `welcome.tsx` y la bienvenida de Laravel/Inertia en `/` se sacaron: la raíz ahora redirige a `/dashboard` o `/login` según haya sesión. De paso se fue el único error de TypeScript preexistente que traía esa página (`mix-blend-mode: 'plus-darker'`).
 - Se borraron, en distintos momentos, los archivos muertos del starter kit y del sistema de living retirado: los layouts de auth alternativos, el sidebar completo (`app-sidebar.tsx`, `nav-main` viejo, `ui/sidebar.tsx`, `use-mobile.tsx`), `app-logo-icon`, `appearance-dropdown`, `nav-footer`, `placeholder-pattern`, `app-shell` y `heading` (reemplazados por `PanelFondo` y `HojaBoard`), y en `app.css` los materiales de living (`mat-almohadon`, `mat-pana`, `mat-ceramica`, `mat-papel`, el mecanismo `.hunde`) con sus tokens (`--tex-nudo`, `--tex-pana`, `--ceramica-hi`, `--vidriado-torno`, `--radius-almohadon`, `--radius-arco`). Ninguno tenía referencias después del cambio que lo dejó obsoleto.

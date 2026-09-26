@@ -42,7 +42,10 @@ class PerfilRequest extends FormRequest
                 Rule::enum(ColorPerfil::class),
                 Rule::unique('perfiles')->where('user_id', $userId)->ignore($perfilId),
             ],
+            // Vacío al editar = se deja el PIN que ya tenía; para sacarlo
+            // se manda `quitar_pin`.
             'pin' => ['nullable', 'string', 'digits_between:4,6'],
+            'quitar_pin' => ['sometimes', 'boolean'],
         ];
     }
 }

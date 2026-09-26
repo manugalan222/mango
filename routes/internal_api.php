@@ -25,6 +25,9 @@ Route::middleware(['auth'])->group(function () {
         ->parameters(['perfiles' => 'perfil'])
         ->except(['index', 'show']);
 
+    Route::post('perfiles/{perfil}/entrar', [PerfilController::class, 'entrar'])
+        ->name('perfiles.entrar');
+
     Route::apiResource('notas', NotaController::class)
         ->parameters(['notas' => 'nota'])
         ->except(['index', 'show']);
