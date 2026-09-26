@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Perfil\StorePerfilRequest;
-use App\Http\Requests\Perfil\UpdatePerfilRequest;
+use App\Http\Requests\Perfil\PerfilRequest;
 use App\Models\Perfil;
 use App\Services\PerfilService;
 use Illuminate\Http\RedirectResponse;
@@ -22,14 +21,14 @@ class PerfilController extends Controller
         ]);
     }
 
-    public function store(StorePerfilRequest $request): RedirectResponse
+    public function store(PerfilRequest $request): RedirectResponse
     {
         $this->perfiles->crear($request->user(), $request->validated());
 
         return to_route('perfiles.index');
     }
 
-    public function update(UpdatePerfilRequest $request, Perfil $perfil): RedirectResponse
+    public function update(PerfilRequest $request, Perfil $perfil): RedirectResponse
     {
         $this->perfiles->actualizar($perfil, $request->validated());
 

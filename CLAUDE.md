@@ -25,7 +25,7 @@ Dos archivos, según qué devuelve la ruta:
 - **`routes/web.php`** — sólo vistas: los `GET` que hacen `Inertia::render(...)`. Ahí vive `perfiles.index`.
 - **`routes/internal_api.php`** — las mutaciones que el propio frontend dispara vía Inertia (`store`, `update`, `destroy`), con `Route::apiResource(...)->except(['index', 'show'])`. Se registra con un `require` más en `web.php`, igual que `settings.php` y `auth.php` — **no** es la key `api` de `bootstrap/app.php`: correr ahí lo pondría bajo el stack `api` (sin sesión, sin CSRF), y el frontend manda cookie de sesión, no token. No es una API pública, es la forma de separar "vista" de "mutación" dentro de la misma app.
 
-Cada recurso nuevo repite el patrón de `perfiles`: `Enum` (si el campo lo pide) → `Model` → `FormRequest` de alta y de edición → `Service` con la lógica → `Controller` fino que delega al Service → ruta de vista en `web.php` + `apiResource` en `internal_api.php`.
+Cada recurso nuevo repite el patrón de `perfiles`: `Enum` (si el campo lo pide) → `Model` → un `FormRequest` unificado para alta y edición → `Service` con la lógica → `Controller` fino que delega al Service → ruta de vista en `web.php` + `apiResource` en `internal_api.php`.
 
 **Ojo con `Route::apiResource`/`Route::resource` y nombres en español:** el pluralizador de Laravel no sabe castellano — de `perfiles` saca el parámetro `{perfile}`, no `{perfil}`, y eso rompe el binding con la variable del controller. Agregar siempre `->parameters(['<recurso>' => '<singular>'])`. Le va a pasar a `tareas`, `compras`, `gastos` y `casa` cuando se arme esas rutas.
 
@@ -129,10 +129,14 @@ Verde = completado. Mango = seleccionado o urgente. Son significados distintos y
 | `.mat-hoja-oscura` | la misma hoja, sobre panel verde | la única tarjeta de logro por pantalla |
 | `.hoja-rayado` | rayado de cuaderno (pseudo-elemento, se suma a `.mat-hoja`) | la sección que necesite esa textura — nunca las dos a la vez |
 | `.mat-pegatina` + `.mat-pegatina-mango`/`-verde`/`-lino` | pastilla de tinta y sombra dura | botones (primario, secundario, alternativa guardada) |
-| `.mat-panel-liso` | verde liso, fibra y caída de luz | barra superior, panel de auth |
+| `.mat-panel-liso` | verde liso, fibra, grano y caída de luz | barra superior, panel de auth |
 | `.mat-vidrio` | desenfoque | toasts, modales |
 
+`.hoja-fija` se suma a `.mat-hoja` para la hoja que **no** se levanta al pasar el mouse: el cuaderno de `SeccionTabs`, que ocupa la página y lleva separadores montados en el borde — si se despegara, los separadores quedarían flotando aparte.
+
 Un objeto lleva **un** material. La pátina de desgaste (una mancha de `--arcilla` casi insinuada, 16% de opacidad, `mix-blend-mode`) viene **incluida** en `.mat-hoja`/`.mat-hoja-oscura` — no es una clase aparte, así no hay que acordarse de sumarla tarjeta por tarjeta.
+
+`--grano` es más fino que `--fibra` y vive sólo en `.mat-panel-liso` — no es una tercera textura de papel, es parte de la receta del verde. No sumarlo a `.mat-hoja`: la regla de "sólo liso y rayado" (punto 3 más abajo) sigue siendo para el papel.
 
 **Lo que costó varias vueltas y no hay que volver a discutir:**
 
@@ -208,7 +212,8 @@ El array `attributes` de `lang/es/validation.php` nombra los campos **con artíc
 | `BentoGrid.tsx` | muro de galería de 6 columnas |
 | `PanelCard.tsx` | hoja de cuaderno, anchos 2/3/4, `textura="liso"\|"rayado"` |
 | `EstadoVacio.tsx` | ícono + qué falta + acción, para cuando todavía no hay datos reales |
-| `SeccionTabs.tsx` | el board con pestañas de una sección (Finanzas, Hogar), sincroniza `?tab=` |
+| `SeccionTabs.tsx` | la hoja de una sección con sus marcadores: sólo las subsecciones de lo que eligió la barra superior (Finanzas → Gastos, Deudas, Ahorros), nunca las de otra sección. Sincroniza `?tab=` |
+| `PanelFondo.tsx` | el verde texturado (`.mat-panel-liso`) como fondo: la puerta de auth y el escritorio de Finanzas/Hogar |
 | `FilasList.tsx` | lista de filas |
 | `FilaItem.tsx` | fila con punteada |
 | `TareaRow.tsx` | quehacer marcable |
@@ -234,10 +239,10 @@ Las barras llevan **etiqueta directa** en cada una: nadie tiene que cruzar una l
 
 ## Layouts
 
-- `layouts/auth/auth-simple-layout.tsx` — **la puerta.** Fondo verde **plano**: es lo único de todo el sistema que no lleva material, porque todavía no estás adentro de la casa. El slogan arriba, como el cartel sobre la puerta. El formulario vive en una **hoja de cuaderno** (`.mat-hoja.hoja-rayado`) apoyada sobre esa luz —ya no en un arco: el arco simulaba una puerta, y esa metáfora de casa se dejó junto con los muebles.
+- `layouts/auth/auth-simple-layout.tsx` — **la puerta.** Ya no es el único fondo sin material: usa `.mat-panel-liso`, la misma receta de verde que la barra superior (fibra, grano y la luz de la repisa, anclada arriba a la izquierda — ventana de día, se calienta a mango de noche, sin moverse de lugar. Antes había una bola de luz difusa que saltaba de esquina a esquina al cambiar de tema; se sacó por low-cost). El slogan arriba, como el cartel sobre la puerta. El formulario vive en una **hoja de cuaderno** (`.mat-hoja.hoja-rayado`) apoyada sobre ese panel —ya no en un arco: el arco simulaba una puerta, y esa metáfora de casa se dejó junto con los muebles.
 
   El centrado usa `m-auto`, no `justify-center`: si el formulario es más alto que la pantalla, `justify-center` recorta el borde de arriba y no se puede llegar scrolleando.
-- `layouts/app/app-header-layout.tsx` — la barra superior toma el estilo desde `app.css`.
+- `layouts/app/app-header-layout.tsx` — la barra superior toma el estilo desde `app.css`. Acepta `fondo="panel"` para apoyar la página sobre `PanelFondo` (lo usan Finanzas y Hogar). Dashboard y ajustes siguen en yeso: tienen texto suelto en `--tinta` y una hoja oscura que sobre verde desaparecería.
 
 ---
 

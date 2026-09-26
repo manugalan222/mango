@@ -7,14 +7,17 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdatePerfilRequest extends FormRequest
+class PerfilRequest extends FormRequest
 {
     /**
-     * Sólo la casa dueña del perfil puede editarlo.
+     * Sólo la casa dueña del perfil puede editarlo. Al crear todavía no hay
+     * modelo de ruta, así que se autoriza siempre.
      */
     public function authorize(): bool
     {
-        return $this->route('perfil')->user_id === $this->user()->id;
+        $perfil = $this->route('perfil');
+
+        return $perfil === null || $perfil->user_id === $this->user()->id;
     }
 
     /**
@@ -25,7 +28,7 @@ class UpdatePerfilRequest extends FormRequest
     public function rules(): array
     {
         $userId = $this->user()->id;
-        $perfilId = $this->route('perfil')->id;
+        $perfilId = $this->route('perfil')?->id;
 
         return [
             'nombre' => [
