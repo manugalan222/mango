@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils';
 import { ManoIcon, type NombreIcono } from '@/components/mango/ManoIcon';
+import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
 
 /**

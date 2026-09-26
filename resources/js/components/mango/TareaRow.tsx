@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils';
 import { ManoIcon } from '@/components/mango/ManoIcon';
+import { cn } from '@/lib/utils';
 import { MiembroAvatar, type ColorMiembro } from './MiembroAvatar';
 
 /**

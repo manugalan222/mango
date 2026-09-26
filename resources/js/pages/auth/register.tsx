@@ -1,5 +1,5 @@
-import { Head, useForm } from '@inertiajs/react';
 import { ManoIcon } from '@/components/mango/ManoIcon';
+import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
 import { TextInput } from '@/components/mango/TextInput';

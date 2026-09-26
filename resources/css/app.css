@@ -75,6 +75,8 @@
     --color-lino: var(--lino);
     --color-panel: var(--panel);
     --color-panel-ink: var(--panel-ink);
+    --color-fondo: var(--fondo);
+    --color-fondo-tinta: var(--fondo-tinta);
     --color-tinta: var(--tinta);
     --color-tinta-2: var(--tinta-2);
     --color-tinta-3: var(--tinta-3);
@@ -178,6 +180,16 @@
        Anclada arriba a la izquierda —ventana de día—; en oscuro se calienta a mango,
        como una lámpara, sin moverse de lugar. */
     --luz-panel: radial-gradient(130% 76% at 22% -6%, rgb(255 255 255 / 0.055), transparent 64%);
+
+    /* el fondo de la casa (`PanelFondo`, barra superior): sigue al modo. De día
+       es yeso con la luz de la ventana; de noche, el verde con la lámpara. La
+       puerta de auth no lo usa: es verde siempre (`.mat-panel-liso`). */
+    --fondo: var(--yeso);
+    --fondo-tinta: var(--tinta);
+    --luz-fondo: radial-gradient(130% 76% at 22% -6%, oklch(0.99 0.025 85 / 0.7), transparent 64%);
+    /* la fibra de día baja de 11% a 8%: ruido gris sobre un fondo claro se lee
+       más fuerte que sobre verde, y al 11% el yeso se ensucia. */
+    --fibra-fondo: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='130'><filter id='fy'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='130' height='130' filter='url(%23fy)' opacity='0.08'/></svg>");
     --vidrio: oklch(0.9743 0.0143 84.58 / 0.6);
     --vidrio-borde: rgb(255 255 255 / 0.55);
 }
@@ -231,6 +243,11 @@
     /* misma repisa, misma esquina — de noche la ventana se vuelve lámpara: se
        calienta a mango y sube de intensidad, nunca cambia de lugar. */
     --luz-panel: radial-gradient(130% 76% at 22% -6%, oklch(0.7 0.15 55 / 0.22), transparent 64%);
+
+    --fondo: var(--panel);
+    --fondo-tinta: var(--panel-ink);
+    --luz-fondo: var(--luz-panel);
+    --fibra-fondo: var(--fibra);
 }
 
 @layer base {
@@ -402,8 +419,8 @@
 
     /* Superficie permanente: fibra, grano y luz, nunca ritmo.
        Un patrón repetido en algo que está siempre en pantalla es un metrónomo.
-       Es el material del verde en toda la casa —barra superior y la puerta
-       de auth comparten esta misma receta, no cada una la suya. */
+       Es el verde que no cambia con el modo: la puerta de auth. Adentro de la
+       casa el fondo es `.mat-fondo`, que de día es yeso. */
     .mat-panel-liso {
         background-color: var(--panel);
         background-image: var(--luz-panel), var(--grano), var(--fibra);
@@ -411,12 +428,26 @@
             auto,
             70px 70px,
             130px 130px;
-        /* Fijo al viewport: la barra superior (sticky) y el `PanelFondo` de
-           abajo muestran el mismo pedazo de verde, así se leen como un único
-           fondo separado por una línea, no como una franja con su propia luz
-           —la luz calculada sobre 64px de alto se veía como sombra interna—. */
+        /* Fijo al viewport, igual que `.mat-fondo`: una franja con su propia luz
+           calculada sobre 64px de alto se veía como sombra interna. */
         background-attachment: fixed;
         color: var(--panel-ink);
+    }
+
+    /* Fondo de la casa: la misma receta que el panel —luz, grano, fibra, fijo
+       al viewport— pero sobre `--fondo`, que sigue al modo: yeso de día, verde
+       de noche. Lo usan `PanelFondo` (toda la app y la selección de perfil) y
+       la barra superior, así barra y página son un único fondo separado por
+       una línea. Texto suelto encima: `text-fondo-tinta`. */
+    .mat-fondo {
+        background-color: var(--fondo);
+        background-image: var(--luz-fondo), var(--grano), var(--fibra-fondo);
+        background-size:
+            auto,
+            70px 70px,
+            130px 130px;
+        background-attachment: fixed;
+        color: var(--fondo-tinta);
     }
 
     /* Vidrio: todo lo que flota. Nada más lo usa. */

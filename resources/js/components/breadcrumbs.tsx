@@ -7,16 +7,18 @@ export function Breadcrumbs({ breadcrumbs }: { breadcrumbs: BreadcrumbItemType[]
         <>
             {breadcrumbs.length > 0 && (
                 <Breadcrumb>
-                    <BreadcrumbList className="text-panel-ink/75">
+                    <BreadcrumbList className="text-fondo-tinta/75">
                         {breadcrumbs.map((item, index) => {
                             const isLast = index === breadcrumbs.length - 1;
                             return (
                                 <Fragment key={index}>
                                     <BreadcrumbItem>
                                         {isLast ? (
-                                            <BreadcrumbPage className="text-panel-ink">{item.title}</BreadcrumbPage>
+                                            <BreadcrumbPage className="text-fondo-tinta">{item.title}</BreadcrumbPage>
                                         ) : (
-                                            <BreadcrumbLink href={item.href} className="hover:text-panel-ink">{item.title}</BreadcrumbLink>
+                                            <BreadcrumbLink href={item.href} className="hover:text-fondo-tinta">
+                                                {item.title}
+                                            </BreadcrumbLink>
                                         )}
                                     </BreadcrumbItem>
                                     {!isLast && <BreadcrumbSeparator />}

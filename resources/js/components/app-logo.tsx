@@ -12,7 +12,7 @@ export default function AppLogo() {
             <HojaIcon className="size-7 shrink-0" />
             <div className="ml-1.5 grid flex-1 text-left">
                 <span className="font-display truncate text-lg leading-none font-extrabold tracking-[-0.045em]">MANGO</span>
-                {auth?.user?.name && <span className="text-sidebar-foreground/60 mt-0.5 truncate text-[0.68rem] leading-none">{auth.user.name}</span>}
+                {auth?.user?.name && <span className="text-fondo-tinta/60 mt-0.5 truncate text-[0.68rem] leading-none">{auth.user.name}</span>}
             </div>
         </>
     );

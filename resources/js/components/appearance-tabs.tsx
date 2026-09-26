@@ -1,5 +1,5 @@
-import { Appearance, useAppearance } from '@/hooks/use-appearance';
 import { ManoIcon, type NombreIcono } from '@/components/mango/ManoIcon';
+import { Appearance, useAppearance } from '@/hooks/use-appearance';
 import { cn } from '@/lib/utils';
 import { HTMLAttributes } from 'react';
 

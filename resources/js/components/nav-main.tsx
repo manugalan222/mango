@@ -54,7 +54,7 @@ export function NavMain() {
                         prefetch
                         data-active={activo}
                         aria-current={activo ? 'page' : undefined}
-                        className="focus-visible:ring-ring focus-visible:ring-offset-panel text-panel-ink/75 hover:text-panel-ink data-[active=true]:text-panel-ink font-display relative flex shrink-0 items-center rounded-lg px-3 pt-[10px] pb-[14px] text-[0.95rem] font-bold tracking-[-0.015em] transition-colors duration-150 ease-out focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden data-[active=true]:font-extrabold"
+                        className="focus-visible:ring-ring focus-visible:ring-offset-fondo text-fondo-tinta/75 hover:text-fondo-tinta data-[active=true]:text-fondo-tinta font-display relative flex shrink-0 items-center rounded-lg px-3 pt-[10px] pb-[14px] text-[0.95rem] font-bold tracking-[-0.015em] transition-colors duration-150 ease-out focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden data-[active=true]:font-extrabold"
                     >
                         {item.title}
                         <svg className="subrayado" viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden>

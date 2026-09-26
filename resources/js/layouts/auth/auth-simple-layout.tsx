@@ -23,7 +23,7 @@ interface AuthLayoutProps {
  */
 export default function AuthSimpleLayout({ children, title, description }: AuthLayoutProps) {
     return (
-        <PanelFondo className="relative flex min-h-svh flex-col px-5 py-10">
+        <PanelFondo tono="puerta" className="relative flex min-h-svh flex-col px-5 py-10">
             <ModoToggle variante="panel" className="absolute top-5 right-5" />
 
             {/* `m-auto` en vez de `justify-center`: centra igual, y si el formulario

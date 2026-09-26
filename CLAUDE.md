@@ -85,6 +85,8 @@ Todo vive en `resources/css/app.css`, en **OKLCH**, en dos capas:
 
 **Modo claro** = la sala de día: yeso cálido, papel, verde sillón.
 **Modo oscuro** = la sala de noche: nogal, el mismo verde, mango más encendido.
+
+**El fondo de la casa sigue al modo:** `--fondo`/`--fondo-tinta` son yeso y tinta de día, verde (`--panel`) y `panel-ink` de noche, con `--luz-fondo` (ventana cálida de día, la lámpara mango de noche, siempre en la misma esquina) y `--fibra-fondo` (8% de día: al 11% el ruido gris ensucia el yeso). Texto suelto sobre el fondo —saludo, barra, migas de pan— va en `text-fondo-tinta`, nunca en `tinta` ni `panel-ink` fijos. La única excepción es la puerta de auth: verde en los dos modos.
 Ambos son el mismo sistema; el oscuro no es una inversión del claro.
 
 ### La regla que no se rompe
@@ -131,14 +133,15 @@ Verde = completado. Mango = seleccionado o urgente. Son significados distintos y
 | `.mat-hoja-oscura` | la misma hoja, sobre panel verde | la única tarjeta de logro por pantalla |
 | `.hoja-rayado` | rayado de cuaderno (pseudo-elemento, se suma a `.mat-hoja`) | la sección que necesite esa textura — nunca las dos a la vez |
 | `.mat-pegatina` + `.mat-pegatina-mango`/`-verde`/`-lino` | pastilla de tinta y sombra dura | botones (primario, secundario, alternativa guardada) |
-| `.mat-panel-liso` | verde liso, fibra, grano y caída de luz | barra superior, panel de auth |
+| `.mat-fondo` | `--fondo` (yeso de día, verde de noche), fibra, grano y luz, fijo al viewport | el fondo de la casa: `PanelFondo` y la barra superior |
+| `.mat-panel-liso` | verde en los dos modos, fibra, grano y caída de luz, fijo al viewport | la puerta de auth (`PanelFondo tono="puerta"`) |
 | `.mat-vidrio` | desenfoque | toasts, modales |
 
 `.hoja-fija` se suma a `.mat-hoja` para la hoja que **no** se levanta al pasar el mouse: la `HojaBoard`, que ocupa la página y en `SeccionTabs` lleva marcadores montados en el borde — si se despegara, los marcadores quedarían flotando aparte. Las hojas chicas (`PanelCard`) sí se despegan.
 
 Un objeto lleva **un** material. La pátina de desgaste (una mancha de `--arcilla` casi insinuada, 16% de opacidad, `mix-blend-mode`) viene **incluida** en `.mat-hoja`/`.mat-hoja-oscura` — no es una clase aparte, así no hay que acordarse de sumarla tarjeta por tarjeta.
 
-`--grano` es más fino que `--fibra` y vive sólo en `.mat-panel-liso` — no es una tercera textura de papel, es parte de la receta del verde. No sumarlo a `.mat-hoja`: la regla de "sólo liso y rayado" (punto 3 más abajo) sigue siendo para el papel.
+`--grano` es más fino que `--fibra` y vive sólo en `.mat-fondo` y `.mat-panel-liso` — no es una tercera textura de papel, es parte de la receta del fondo. No sumarlo a `.mat-hoja`: la regla de "sólo liso y rayado" (punto 3 más abajo) sigue siendo para el papel.
 
 **Lo que costó varias vueltas y no hay que volver a discutir:**
 
@@ -216,7 +219,7 @@ El array `attributes` de `lang/es/validation.php` nombra los campos **con artíc
 | `HojaBoard.tsx` | la hoja grande de una página, rayada y fija, con el título adentro. Finanzas y Hogar (vía `SeccionTabs`) y ajustes |
 | `EstadoVacio.tsx` | ícono + qué falta + acción, para cuando todavía no hay datos reales |
 | `SeccionTabs.tsx` | la hoja de una sección con sus marcadores: sólo las subsecciones de lo que eligió la barra superior (Finanzas → Gastos, Deudas, Ahorros), nunca las de otra sección. Sincroniza `?tab=` |
-| `PanelFondo.tsx` | el verde texturado (`.mat-panel-liso`) como fondo: la puerta de auth y **toda** la app. Texto suelto encima va en `text-panel-ink` |
+| `PanelFondo.tsx` | el fondo texturado. Por defecto (`casa`, `.mat-fondo`) sigue al modo: toda la app y la selección de perfil. `tono="puerta"` (`.mat-panel-liso`) es verde siempre: sólo auth |
 | `FilasList.tsx` | lista de filas |
 | `FilaItem.tsx` | fila con punteada |
 | `TareaRow.tsx` | quehacer marcable |
@@ -236,7 +239,7 @@ Las barras llevan **etiqueta directa** en cada una: nadie tiene que cruzar una l
 
 ## Navegación
 
-`components/app-header.tsx` — la barra superior, estilo Netflix: no hay sidebar. Logo pegado a la esquina izquierda, los tres destinos (`nav-main.tsx`) con aire entre sí, luz + perfil + cerrar sesión a la derecha. Barra y página son **un solo fondo**: `.mat-panel-liso` va con `background-attachment: fixed`, así la barra sticky muestra el mismo pedazo de verde que tiene detrás, y la separa sólo una línea de `panel-ink` al 14%. (Con su propia luz calculada sobre 64px se leía como sombra interna.)
+`components/app-header.tsx` — la barra superior, estilo Netflix: no hay sidebar. Logo pegado a la esquina izquierda, los tres destinos (`nav-main.tsx`) con aire entre sí, luz + perfil + cerrar sesión a la derecha. Barra y página son **un solo fondo**: la barra usa `.mat-fondo`, fijo al viewport igual que `PanelFondo`, así la barra sticky muestra el mismo pedazo de fondo que tiene detrás (yeso de día, verde de noche), y la separa sólo una línea de `fondo-tinta` al 14%. (Con su propia luz calculada sobre 64px se leía como sombra interna.)
 
 Los destinos van **sin íconos**, sólo el nombre en la display (700, activo 800): son tres palabras que nadie reconoce antes por el dibujo, y el subrayado es el único adorno. La sección activa **no** se rellena — eso era la pastilla `rounded-hoja` del sistema viejo — se subraya: cada link lleva un `<svg>` con un único `path` en zigzag de esquinas redondeadas (uno distinto por destino) que se dibuja **como a mano** en 320ms: keyframes `trazo-*` en `app.css` con una parada por giro y curva propia por tramo (apoya, afloja en cada vuelta, levanta). Al salir no se desdibuja para atrás, se levanta por opacidad. Si se cambia un zigzag hay que volver a medir sus paradas. El color del link activo es `panel-ink` pleno; ojo con reusar `on-mango` para texto suelto sobre el panel — está pensado para texto sobre un relleno mango y en modo oscuro es casi negro, no lee sobre verde.
 
@@ -244,10 +247,10 @@ Los destinos van **sin íconos**, sólo el nombre en la display (700, activo 800
 
 ## Layouts
 
-- `layouts/auth/auth-simple-layout.tsx` — **la puerta.** Ya no es el único fondo sin material: usa `.mat-panel-liso`, la misma receta de verde que la barra superior (fibra, grano y la luz de la repisa, anclada arriba a la izquierda — ventana de día, se calienta a mango de noche, sin moverse de lugar. Antes había una bola de luz difusa que saltaba de esquina a esquina al cambiar de tema; se sacó por low-cost). El slogan arriba, como el cartel sobre la puerta. El formulario vive en una **hoja de cuaderno** (`.mat-hoja.hoja-rayado`) apoyada sobre ese panel —ya no en un arco: el arco simulaba una puerta, y esa metáfora de casa se dejó junto con los muebles.
+- `layouts/auth/auth-simple-layout.tsx` — **la puerta.** Ya no es el único fondo sin material: usa `PanelFondo tono="puerta"` (`.mat-panel-liso`): verde en los dos modos, a diferencia del resto de la casa, que de día es yeso. Fibra, grano y la luz de la repisa, anclada arriba a la izquierda — ventana de día, se calienta a mango de noche, sin moverse de lugar. Antes había una bola de luz difusa que saltaba de esquina a esquina al cambiar de tema; se sacó por low-cost). El slogan arriba, como el cartel sobre la puerta. El formulario vive en una **hoja de cuaderno** (`.mat-hoja.hoja-rayado`) apoyada sobre ese panel —ya no en un arco: el arco simulaba una puerta, y esa metáfora de casa se dejó junto con los muebles.
 
   El centrado usa `m-auto`, no `justify-center`: si el formulario es más alto que la pantalla, `justify-center` recorta el borde de arriba y no se puede llegar scrolleando.
-- `layouts/app/app-header-layout.tsx` — la barra superior toma el estilo desde `app.css`. Toda la app se apoya sobre `PanelFondo`, el mismo verde del login. Lo que va suelto sobre el verde (el saludo del dashboard, las migas de pan) lleva `text-panel-ink`: `--tinta` sobre ese verde no llega a contraste en modo claro.
+- `layouts/app/app-header-layout.tsx` — la barra superior toma el estilo desde `app.css`. Toda la app se apoya sobre `PanelFondo` (yeso de día, verde de noche); la selección de perfil (`pages/perfiles`) también, para que elegir perfil y entrar sean el mismo cuarto. Lo que va suelto sobre el fondo lleva `text-fondo-tinta`. Ojo con `mango-texto` suelto sobre el fondo: de noche, sobre verde, no llega a contraste de texto.
 
 ---
 

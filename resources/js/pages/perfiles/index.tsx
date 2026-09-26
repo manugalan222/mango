@@ -1,5 +1,6 @@
-import { COLORES_MIEMBRO, FONDOS, MiembroAvatar } from '@/components/mango/MiembroAvatar';
 import { ManoIcon } from '@/components/mango/ManoIcon';
+import { COLORES_MIEMBRO, FONDOS, MiembroAvatar } from '@/components/mango/MiembroAvatar';
+import { PanelFondo } from '@/components/mango/PanelFondo';
 import { TextInput } from '@/components/mango/TextInput';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -33,10 +34,10 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
         <>
             <Head title="Perfiles" />
 
-            <div className="bg-background flex min-h-svh flex-col items-center gap-10 px-4 py-16">
+            <PanelFondo className="flex min-h-svh flex-col items-center gap-10 px-4 py-16">
                 <div className="text-center">
                     <h1 className="font-display text-3xl font-extrabold tracking-[-0.03em]">¿Quién anda por casa?</h1>
-                    <p className="text-tinta-2 mt-1 text-sm">Elegí tu perfil para entrar.</p>
+                    <p className="text-fondo-tinta/80 mt-1 text-sm">Elegí tu perfil para entrar.</p>
                 </div>
 
                 <ul className="flex flex-wrap items-start justify-center gap-6">
@@ -90,7 +91,7 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
                     ))}
 
                     {!casaCompleta && (
-                        <li className="rounded-placa border-tinta-3/30 text-tinta-3 hover:border-mango-texto hover:text-mango-texto flex w-40 flex-col items-center gap-3 border-2 border-dashed p-5 transition-colors duration-150">
+                        <li className="rounded-placa border-fondo-tinta/35 text-fondo-tinta/75 hover:border-fondo-tinta hover:text-fondo-tinta flex w-40 flex-col items-center gap-3 border-2 border-dashed p-5 transition-colors duration-150">
                             <button
                                 type="button"
                                 onClick={() => setCreando(true)}
@@ -106,12 +107,12 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
                     )}
                 </ul>
 
-                {casaCompleta && <p className="text-tinta-2 text-sm">Ya hay un perfil para cada color de la casa.</p>}
+                {casaCompleta && <p className="text-fondo-tinta/80 text-sm">Ya hay un perfil para cada color de la casa.</p>}
 
-                <TextLink href={route('logout')} method="post">
+                <TextLink href={route('logout')} method="post" className="text-fondo-tinta decoration-fondo-tinta/35">
                     Cerrar sesión
                 </TextLink>
-            </div>
+            </PanelFondo>
 
             <Dialog open={abierto} onOpenChange={(open) => !open && cerrarDialog()}>
                 <DialogContent>
@@ -158,7 +159,7 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
                                             aria-label={c}
                                             onClick={() => setData('color', c)}
                                             className={cn(
-                                                'rounded-hoja size-11 ring-offset-2 ring-offset-background transition-transform disabled:cursor-not-allowed disabled:opacity-30',
+                                                'rounded-hoja ring-offset-background size-11 ring-offset-2 transition-transform disabled:cursor-not-allowed disabled:opacity-30',
                                                 FONDOS[c],
                                                 data.color === c ? 'ring-ring scale-105 ring-2' : 'ring-border ring-1',
                                             )}

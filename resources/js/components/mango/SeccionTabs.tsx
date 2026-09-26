@@ -73,7 +73,7 @@ export function SeccionTabs({
                             'bg-muted text-tinta-2 z-0 translate-y-1 shadow-none transition-[transform,background-color,color] duration-150 ease-out',
                             'hover:text-tinta hover:translate-y-0',
                             'data-[state=active]:bg-lino data-[state=active]:text-tinta data-[state=active]:z-20 data-[state=active]:translate-y-0 data-[state=active]:shadow-[inset_0_4px_0_0_var(--mango)]',
-                            'focus-visible:ring-ring focus-visible:ring-offset-panel focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden',
+                            'focus-visible:ring-ring focus-visible:ring-offset-fondo focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden',
                         )}
                     >
                         {p.titulo}
