@@ -1,5 +1,4 @@
 import { type ColorMiembro } from '@/components/mango/MiembroAvatar';
-import { LucideIcon } from 'lucide-react';
 
 export interface Auth {
     user: User;
@@ -18,7 +17,6 @@ export interface NavGroup {
 export interface NavItem {
     title: string;
     url: string;
-    icon?: LucideIcon | null;
     isActive?: boolean;
 }
 

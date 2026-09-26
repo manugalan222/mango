@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\DeudaController;
+use App\Http\Controllers\GastoController;
+use App\Http\Controllers\NotaController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\TareaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,4 +24,26 @@ Route::middleware(['auth'])->group(function () {
     Route::apiResource('perfiles', PerfilController::class)
         ->parameters(['perfiles' => 'perfil'])
         ->except(['index', 'show']);
+
+    Route::apiResource('notas', NotaController::class)
+        ->parameters(['notas' => 'nota'])
+        ->except(['index', 'show']);
+
+    Route::apiResource('tareas', TareaController::class)
+        ->parameters(['tareas' => 'tarea'])
+        ->except(['index', 'show']);
+
+    Route::patch('tareas/{tarea}/completar', [TareaController::class, 'completar'])
+        ->name('tareas.completar');
+
+    Route::apiResource('gastos', GastoController::class)
+        ->parameters(['gastos' => 'gasto'])
+        ->except(['index', 'show']);
+
+    Route::apiResource('deudas', DeudaController::class)
+        ->parameters(['deudas' => 'deuda'])
+        ->except(['index', 'show']);
+
+    Route::patch('deudas/{deuda}/saldar', [DeudaController::class, 'saldar'])
+        ->name('deudas.saldar');
 });

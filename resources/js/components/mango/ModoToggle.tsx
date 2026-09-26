@@ -1,6 +1,6 @@
 import { useAppearance } from '@/hooks/use-appearance';
+import { ManoIcon } from '@/components/mango/ManoIcon';
 import { cn } from '@/lib/utils';
-import { Lamp } from 'lucide-react';
 
 interface ModoToggleProps {
     /** Sobre qué material se apoya el botón, para elegir un color legible. */
@@ -33,7 +33,7 @@ export function ModoToggle({ variante = 'papel', className }: ModoToggleProps) {
                 aria-hidden
                 className={cn('bg-mango absolute inset-2 rounded-full blur-md transition-opacity duration-150', encendida ? 'opacity-35' : 'opacity-0')}
             />
-            <Lamp aria-hidden className="relative h-5 w-5" strokeWidth={2} fill={encendida ? 'currentColor' : 'none'} fillOpacity={encendida ? 0.3 : 0} />
+            <ManoIcon nombre="lampara" className="relative h-5 w-5" fill={encendida ? 'currentColor' : 'none'} fillOpacity={encendida ? 0.3 : 0} />
         </button>
     );
 }

@@ -1,8 +1,14 @@
 <?php
 
 use App\Http\Controllers\PerfilController;
+use App\Models\Categoria;
+use App\Services\DeudaService;
+use App\Services\GastoService;
+use App\Services\NotaService;
 use App\Services\PerfilService;
+use App\Services\TareaService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -19,12 +25,20 @@ Route::middleware(['auth'])->group(function () {
         ]);
     })->name('dashboard');
 
-    Route::get('finanzas', function () {
-        return Inertia::render('finanzas/index');
+    Route::get('finanzas', function (Request $request, GastoService $gastos, DeudaService $deudas) {
+        return Inertia::render('finanzas/index', [
+            'gastos' => $gastos->listarDeCasa($request->user()),
+            'totalesPorCategoria' => $gastos->totalesPorCategoria($request->user(), Carbon::now()),
+            'categorias' => Categoria::orderBy('nombre')->get(),
+            'deudas' => $deudas->listarDeCasa($request->user()),
+        ]);
     })->name('finanzas.index');
 
-    Route::get('hogar', function () {
-        return Inertia::render('hogar/index');
+    Route::get('hogar', function (Request $request, NotaService $notas, TareaService $tareas) {
+        return Inertia::render('hogar/index', [
+            'notas' => $notas->listarDeCasa($request->user()),
+            'tareas' => $tareas->listarDeCasa($request->user()),
+        ]);
     })->name('hogar.index');
 
     Route::get('perfiles', [PerfilController::class, 'index'])->name('perfiles.index');

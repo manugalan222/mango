@@ -8,7 +8,7 @@ Plataforma web para administrar el hogar: **finanzas y tareas** compartidas entr
 
 ## Stack
 
-Laravel + Inertia 2 + React 19 + TypeScript + Tailwind v4 (CSS-first, sin `tailwind.config.js`) + shadcn/ui + lucide-react.
+Laravel + Inertia 2 + React 19 + TypeScript + Tailwind v4 (CSS-first, sin `tailwind.config.js`) + shadcn/ui. Íconos propios dibujados a mano (`ManoIcon`).
 
 ```bash
 composer run dev      # servidor, cola, logs y vite a la vez
@@ -16,7 +16,7 @@ npm run build         # compilar assets
 npx tsc --noEmit      # chequeo de tipos
 ```
 
-Íconos: **lucide**, que es lo que ya trae el kit y lo que declara `components.json`. No cambiar de librería sin una razón mejor que el gusto.
+Íconos: **`ManoIcon`** (`components/mango/ManoIcon.tsx`), dibujados a mano con la tinta del contorno (2.3, puntas redondas, trazo irregular), en grilla 24×24: `<ManoIcon nombre="recibo" className="size-4" />`. Reemplazaron a lucide en **toda** la app por decisión de Manu —la geometría de regla chocaba con las hojas y el subrayado a mano—. Un ícono nuevo se dibuja ahí y se suma al registro `TRAZOS`; no se importa de ninguna librería. `lucide-react` sigue instalado sólo porque `components.json` lo declara: **todo componente que agregue `npx shadcn add` trae imports de lucide que hay que cambiar por `ManoIcon`.**
 
 ## Rutas
 
@@ -39,6 +39,8 @@ Tres excepciones que **no** se renombran:
 
 1. `components/ui/**` — los genera el CLI de shadcn por nombre en minúscula. Renombrarlos rompe `npx shadcn add`.
 2. `pages/**` — Inertia los resuelve por la cadena que manda el servidor (`Inertia::render('dashboard')`). El nombre del archivo es parte del contrato con PHP.
+
+**Layout persistente:** una página de app **no** se envuelve en `<AppLayout>` dentro de su JSX; lo declara aparte, `Pagina.layout = (page: ReactNode) => <AppLayout>{page}</AppLayout>;` (con `breadcrumbs` si hace falta). Así Inertia mantiene montada la barra al navegar y sólo cambia el contenido. Envuelta adentro, la barra se desmonta en cada click y el subrayado nace ya dibujado, sin animar.
 3. Los archivos que vienen del starter kit (`app-sidebar.tsx`, `nav-main.tsx`, `input-error.tsx`…). La convención es para lo que escribimos nosotros; renombrar lo ajeno sólo agrega ruido al diff.
 
 ---
@@ -132,7 +134,7 @@ Verde = completado. Mango = seleccionado o urgente. Son significados distintos y
 | `.mat-panel-liso` | verde liso, fibra, grano y caída de luz | barra superior, panel de auth |
 | `.mat-vidrio` | desenfoque | toasts, modales |
 
-`.hoja-fija` se suma a `.mat-hoja` para la hoja que **no** se levanta al pasar el mouse: el cuaderno de `SeccionTabs`, que ocupa la página y lleva separadores montados en el borde — si se despegara, los separadores quedarían flotando aparte.
+`.hoja-fija` se suma a `.mat-hoja` para la hoja que **no** se levanta al pasar el mouse: la `HojaBoard`, que ocupa la página y en `SeccionTabs` lleva marcadores montados en el borde — si se despegara, los marcadores quedarían flotando aparte. Las hojas chicas (`PanelCard`) sí se despegan.
 
 Un objeto lleva **un** material. La pátina de desgaste (una mancha de `--arcilla` casi insinuada, 16% de opacidad, `mix-blend-mode`) viene **incluida** en `.mat-hoja`/`.mat-hoja-oscura` — no es una clase aparte, así no hay que acordarse de sumarla tarjeta por tarjeta.
 
@@ -210,10 +212,11 @@ El array `attributes` de `lang/es/validation.php` nombra los campos **con artíc
 | `SelloBadge.tsx` | logro, en forma de hoja |
 | `MiembroAvatar.tsx` | identidad de cada conviviente (+ `COLORES_MIEMBRO`) |
 | `BentoGrid.tsx` | muro de galería de 6 columnas |
-| `PanelCard.tsx` | hoja de cuaderno, anchos 2/3/4, `textura="liso"\|"rayado"` |
+| `PanelCard.tsx` | hoja chica del mismo papel que `HojaBoard` (rayada por defecto, título escrito arriba), anchos 2/3/4. El muro del dashboard |
+| `HojaBoard.tsx` | la hoja grande de una página, rayada y fija, con el título adentro. Finanzas y Hogar (vía `SeccionTabs`) y ajustes |
 | `EstadoVacio.tsx` | ícono + qué falta + acción, para cuando todavía no hay datos reales |
 | `SeccionTabs.tsx` | la hoja de una sección con sus marcadores: sólo las subsecciones de lo que eligió la barra superior (Finanzas → Gastos, Deudas, Ahorros), nunca las de otra sección. Sincroniza `?tab=` |
-| `PanelFondo.tsx` | el verde texturado (`.mat-panel-liso`) como fondo: la puerta de auth y el escritorio de Finanzas/Hogar |
+| `PanelFondo.tsx` | el verde texturado (`.mat-panel-liso`) como fondo: la puerta de auth y **toda** la app. Texto suelto encima va en `text-panel-ink` |
 | `FilasList.tsx` | lista de filas |
 | `FilaItem.tsx` | fila con punteada |
 | `TareaRow.tsx` | quehacer marcable |
@@ -233,7 +236,9 @@ Las barras llevan **etiqueta directa** en cada una: nadie tiene que cruzar una l
 
 ## Navegación
 
-`components/app-header.tsx` — la barra superior, estilo Netflix: no hay sidebar. Logo pegado a la esquina izquierda, los tres destinos (`nav-main.tsx`) con aire entre sí, luz + perfil + cerrar sesión a la derecha. La sección activa **no** se rellena — eso era la pastilla `rounded-hoja` del sistema viejo — se subraya: cada link lleva un `<svg>` con un único `path` en zigzag (uno distinto por destino, no la misma línea repetida) que se dibuja de punta a punta al activarse vía `stroke-dashoffset` (`.subrayado` en `app.css`). El color del link activo es `panel-ink` pleno; ojo con reusar `on-mango` para texto suelto sobre el panel — está pensado para texto sobre un relleno mango y en modo oscuro es casi negro, no lee sobre verde.
+`components/app-header.tsx` — la barra superior, estilo Netflix: no hay sidebar. Logo pegado a la esquina izquierda, los tres destinos (`nav-main.tsx`) con aire entre sí, luz + perfil + cerrar sesión a la derecha. Barra y página son **un solo fondo**: `.mat-panel-liso` va con `background-attachment: fixed`, así la barra sticky muestra el mismo pedazo de verde que tiene detrás, y la separa sólo una línea de `panel-ink` al 14%. (Con su propia luz calculada sobre 64px se leía como sombra interna.)
+
+Los destinos van **sin íconos**, sólo el nombre en la display (700, activo 800): son tres palabras que nadie reconoce antes por el dibujo, y el subrayado es el único adorno. La sección activa **no** se rellena — eso era la pastilla `rounded-hoja` del sistema viejo — se subraya: cada link lleva un `<svg>` con un único `path` en zigzag de esquinas redondeadas (uno distinto por destino) que se dibuja **como a mano** en 320ms: keyframes `trazo-*` en `app.css` con una parada por giro y curva propia por tramo (apoya, afloja en cada vuelta, levanta). Al salir no se desdibuja para atrás, se levanta por opacidad. Si se cambia un zigzag hay que volver a medir sus paradas. El color del link activo es `panel-ink` pleno; ojo con reusar `on-mango` para texto suelto sobre el panel — está pensado para texto sobre un relleno mango y en modo oscuro es casi negro, no lee sobre verde.
 
 `layouts/app/app-header-layout.tsx` es el único layout de app; no hay variante de sidebar.
 
@@ -242,7 +247,7 @@ Las barras llevan **etiqueta directa** en cada una: nadie tiene que cruzar una l
 - `layouts/auth/auth-simple-layout.tsx` — **la puerta.** Ya no es el único fondo sin material: usa `.mat-panel-liso`, la misma receta de verde que la barra superior (fibra, grano y la luz de la repisa, anclada arriba a la izquierda — ventana de día, se calienta a mango de noche, sin moverse de lugar. Antes había una bola de luz difusa que saltaba de esquina a esquina al cambiar de tema; se sacó por low-cost). El slogan arriba, como el cartel sobre la puerta. El formulario vive en una **hoja de cuaderno** (`.mat-hoja.hoja-rayado`) apoyada sobre ese panel —ya no en un arco: el arco simulaba una puerta, y esa metáfora de casa se dejó junto con los muebles.
 
   El centrado usa `m-auto`, no `justify-center`: si el formulario es más alto que la pantalla, `justify-center` recorta el borde de arriba y no se puede llegar scrolleando.
-- `layouts/app/app-header-layout.tsx` — la barra superior toma el estilo desde `app.css`. Acepta `fondo="panel"` para apoyar la página sobre `PanelFondo` (lo usan Finanzas y Hogar). Dashboard y ajustes siguen en yeso: tienen texto suelto en `--tinta` y una hoja oscura que sobre verde desaparecería.
+- `layouts/app/app-header-layout.tsx` — la barra superior toma el estilo desde `app.css`. Toda la app se apoya sobre `PanelFondo`, el mismo verde del login. Lo que va suelto sobre el verde (el saludo del dashboard, las migas de pan) lleva `text-panel-ink`: `--tinta` sobre ese verde no llega a contraste en modo claro.
 
 ---
 
@@ -253,4 +258,4 @@ Las barras llevan **etiqueta directa** en cada una: nadie tiene que cruzar una l
 - Falta el modelo de datos: gastos, deudas, ahorros, tareas, notas y sus vencimientos. `Perfil` (convivientes) ya existe.
 - Falta que elegir un perfil en `/perfiles` abra sesión de perfil de verdad (ver "El modelo: el usuario es la casa" más arriba).
 - `welcome.tsx` y la bienvenida de Laravel/Inertia en `/` se sacaron: la raíz ahora redirige a `/dashboard` o `/login` según haya sesión. De paso se fue el único error de TypeScript preexistente que traía esa página (`mix-blend-mode: 'plus-darker'`).
-- Se borraron, en distintos momentos, los archivos muertos del starter kit y del sistema de living retirado: los layouts de auth alternativos, el sidebar completo (`app-sidebar.tsx`, `nav-main` viejo, `ui/sidebar.tsx`, `use-mobile.tsx`), `app-logo-icon`, `appearance-dropdown`, `nav-footer`, `placeholder-pattern`, y en `app.css` los materiales de living (`mat-almohadon`, `mat-pana`, `mat-ceramica`, `mat-papel`, el mecanismo `.hunde`) con sus tokens (`--tex-nudo`, `--tex-pana`, `--ceramica-hi`, `--vidriado-torno`, `--radius-almohadon`, `--radius-arco`). Ninguno tenía referencias después del cambio que lo dejó obsoleto.
+- Se borraron, en distintos momentos, los archivos muertos del starter kit y del sistema de living retirado: los layouts de auth alternativos, el sidebar completo (`app-sidebar.tsx`, `nav-main` viejo, `ui/sidebar.tsx`, `use-mobile.tsx`), `app-logo-icon`, `appearance-dropdown`, `nav-footer`, `placeholder-pattern`, `app-shell` y `heading` (reemplazados por `PanelFondo` y `HojaBoard`), y en `app.css` los materiales de living (`mat-almohadon`, `mat-pana`, `mat-ceramica`, `mat-papel`, el mecanismo `.hunde`) con sus tokens (`--tex-nudo`, `--tex-pana`, `--ceramica-hi`, `--vidriado-torno`, `--radius-almohadon`, `--radius-arco`). Ninguno tenía referencias después del cambio que lo dejó obsoleto.

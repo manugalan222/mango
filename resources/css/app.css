@@ -169,19 +169,17 @@
     /* sombras teñidas de espresso: una sombra gris sobre fondo cálido se ve sucia */
     --sombra: 0 1px 2px oklch(0.2502 0.0214 53.96 / 0.05), 0 8px 24px -12px oklch(0.2502 0.0214 53.96 / 0.18);
 
-    /* textura de la barra superior — vive entre 4 y 11% de opacidad, como toda
+    /* textura del panel — vive entre 4 y 11% de opacidad, como toda
        textura de superficie permanente. */
     --fibra: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='130'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='130' height='130' filter='url(%23f)' opacity='0.11'/></svg>");
-    /* caída de lámpara: no se repite, por eso puede vivir en superficie permanente */
+    /* grano: más fino que la fibra, casi imperceptible — polvo en el aire, no tela. */
+    --grano: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='70' height='70'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='1.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='70' height='70' filter='url(%23g)' opacity='0.05'/></svg>");
+    /* caída de lámpara: no se repite, por eso puede vivir en superficie permanente.
+       Anclada arriba a la izquierda —ventana de día—; en oscuro se calienta a mango,
+       como una lámpara, sin moverse de lugar. */
     --luz-panel: radial-gradient(130% 76% at 22% -6%, rgb(255 255 255 / 0.055), transparent 64%);
     --vidrio: oklch(0.9743 0.0143 84.58 / 0.6);
     --vidrio-borde: rgb(255 255 255 / 0.55);
-
-    /* la bola de luz: una sola fuente, arriba a la derecha —la ventana—.
-       Sólo posición y color cambian por tema; el resto lo pone `.luz-ambiente`. */
-    --luz-x: 86%;
-    --luz-y: -4%;
-    --luz-color: oklch(0.87 0.08 61 / 0.5);
 }
 
 /* ─────────────────────────── OSCURO — la sala de noche ─────────────────────────── */
@@ -226,13 +224,13 @@
 
     --sombra: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.55);
     --fibra: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='130'><filter id='fd'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='130' height='130' filter='url(%23fd)' opacity='0.08'/></svg>");
+    --grano: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='70' height='70'><filter id='gd'><feTurbulence type='fractalNoise' baseFrequency='1.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='70' height='70' filter='url(%23gd)' opacity='0.045'/></svg>");
     --vidrio: oklch(0.202 0.0114 48.13 / 0.66);
     --vidrio-borde: rgb(255 255 255 / 0.14);
 
-    /* la lámpara: misma bola, abajo a la izquierda y más mango que sol. */
-    --luz-x: 14%;
-    --luz-y: 94%;
-    --luz-color: oklch(0.68 0.17 42 / 0.48);
+    /* misma repisa, misma esquina — de noche la ventana se vuelve lámpara: se
+       calienta a mango y sube de intensidad, nunca cambia de lugar. */
+    --luz-panel: radial-gradient(130% 76% at 22% -6%, oklch(0.7 0.15 55 / 0.22), transparent 64%);
 }
 
 @layer base {
@@ -322,6 +320,20 @@
         box-shadow: 3px 4px 0 0 var(--tinta);
     }
 
+    /* Hoja fija: la que no se levanta. Para el cuaderno de una sección —una hoja
+       que ocupa la página y lleva separadores montados en su borde—: si se
+       despegara al pasar el mouse, los separadores quedarían flotando aparte. */
+    .mat-hoja.hoja-fija:hover,
+    .mat-hoja.hoja-fija:active {
+        transform: none;
+        box-shadow: 5px 6px 0 0 var(--tinta);
+    }
+
+    /* Entrada del contenido al cambiar de separador: 240ms, y 8px. */
+    .hoja-entra {
+        animation: hoja-entra 240ms cubic-bezier(0.2, 0, 0, 1) both;
+    }
+
     /* La misma hoja, sobre panel verde: para la única tarjeta de logro por pantalla. */
     .mat-hoja-oscura {
         background-color: var(--panel);
@@ -388,14 +400,22 @@
         background-image: repeating-linear-gradient(to bottom, transparent 0 26px, color-mix(in oklch, var(--panel-ink) 12%, transparent) 26px 27px);
     }
 
-    /* Superficie permanente: fibra y luz, nunca ritmo.
-       Un patrón repetido en algo que está siempre en pantalla es un metrónomo. */
+    /* Superficie permanente: fibra, grano y luz, nunca ritmo.
+       Un patrón repetido en algo que está siempre en pantalla es un metrónomo.
+       Es el material del verde en toda la casa —barra superior y la puerta
+       de auth comparten esta misma receta, no cada una la suya. */
     .mat-panel-liso {
         background-color: var(--panel);
-        background-image: var(--luz-panel), var(--fibra);
+        background-image: var(--luz-panel), var(--grano), var(--fibra);
         background-size:
             auto,
+            70px 70px,
             130px 130px;
+        /* Fijo al viewport: la barra superior (sticky) y el `PanelFondo` de
+           abajo muestran el mismo pedazo de verde, así se leen como un único
+           fondo separado por una línea, no como una franja con su propia luz
+           —la luz calculada sobre 64px de alto se veía como sombra interna—. */
+        background-attachment: fixed;
         color: var(--panel-ink);
     }
 
@@ -407,51 +427,17 @@
         backdrop-filter: blur(14px) saturate(1.3);
         box-shadow: var(--sombra);
     }
-
-    /* La bola de luz: ventana en modo claro, lámpara en modo oscuro. Un círculo
-       desenfocado detrás del contenido —`::before` con z-index negativo, no un
-       gradiente de fondo— para poder moverlo y respirarlo con CSS puro.
-       `left`/`top` cambian con --luz-x/--luz-y al cambiar de tema: como son
-       propiedades animables de por sí, la transición alcanza para que viaje. */
-    .luz-ambiente {
-        position: relative;
-        isolation: isolate;
-        overflow: hidden;
-    }
-    .luz-ambiente::before {
-        content: '';
-        position: absolute;
-        z-index: -1;
-        left: calc(var(--luz-x) - 17rem);
-        top: calc(var(--luz-y) - 17rem);
-        width: 34rem;
-        height: 34rem;
-        border-radius: 50%;
-        background: radial-gradient(circle, var(--luz-color) 0%, transparent 72%);
-        filter: blur(48px);
-        pointer-events: none;
-        transition:
-            left 1100ms cubic-bezier(0.22, 0.68, 0.32, 1),
-            top 1100ms cubic-bezier(0.22, 0.68, 0.32, 1);
-        animation: respirar-luz 8s ease-in-out infinite;
-    }
-    @keyframes respirar-luz {
-        0%,
-        100% {
-            opacity: 0.7;
-            scale: 1;
-        }
-        50% {
-            opacity: 1;
-            scale: 1.08;
-        }
-    }
 }
 
 @layer components {
     /* ─── barra superior: la sección activa se subraya, no se rellena ───
-       Un solo trazo en zigzag (un único `path`, no una línea recta) que se
-       dibuja de punta a punta al activarse, como si se remarcara a lápiz. */
+       Un solo trazo en zigzag de esquinas redondeadas (un único `path` por
+       destino) que se dibuja como a mano: los keyframes `trazo-*` tienen una
+       parada por giro y cada tramo su propia curva —apoya el lápiz, afloja en
+       cada vuelta, levanta al final—. Una transición pareja se leía mecánica.
+       Al salir no se desdibuja para atrás: se levanta (opacidad). Sólo corre
+       si la barra sobrevive a la navegación —por eso el layout de app es
+       persistente (`layout` en cada página), no un wrapper por página. */
     .subrayado {
         position: absolute;
         left: 0;
@@ -468,11 +454,150 @@
         stroke-linecap: round;
         stroke-linejoin: round;
         stroke-dasharray: 1;
-        stroke-dashoffset: 1;
-        transition: stroke-dashoffset 320ms ease-out;
+        stroke-dashoffset: 0; /* lo esconde la opacidad, no el guion */
+        opacity: 0;
+        transition: opacity 140ms ease-out;
     }
     [data-active='true'] .subrayado path {
+        opacity: 1;
+        transition: none;
+        animation: var(--trazo) 320ms both;
+    }
+}
+
+/* Una parada por giro del zigzag de cada destino (el vértice, medido sobre el
+   trazo suavizado); el tiempo de cada tramo crece menos que su largo. Si se
+   cambia un zigzag en `nav-main.tsx`, hay que volver a medir estas paradas. */
+@keyframes trazo-dashboard {
+    0% {
+        stroke-dashoffset: 1;
+        animation-timing-function: cubic-bezier(0.55, 0, 0.8, 0.5);
+    }
+    13.3% {
+        stroke-dashoffset: 0.862;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    19.6% {
+        stroke-dashoffset: 0.812;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    32.6% {
+        stroke-dashoffset: 0.679;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    40% {
+        stroke-dashoffset: 0.615;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    53.8% {
+        stroke-dashoffset: 0.47;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    61.3% {
+        stroke-dashoffset: 0.406;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    75.3% {
+        stroke-dashoffset: 0.259;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    82.6% {
+        stroke-dashoffset: 0.197;
+        animation-timing-function: cubic-bezier(0.2, 0.5, 0.35, 1);
+    }
+    100% {
         stroke-dashoffset: 0;
+    }
+}
+
+@keyframes trazo-finanzas {
+    0% {
+        stroke-dashoffset: 1;
+        animation-timing-function: cubic-bezier(0.55, 0, 0.8, 0.5);
+    }
+    11.9% {
+        stroke-dashoffset: 0.882;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    18.4% {
+        stroke-dashoffset: 0.829;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    31.6% {
+        stroke-dashoffset: 0.691;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    38.8% {
+        stroke-dashoffset: 0.631;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    53.4% {
+        stroke-dashoffset: 0.474;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    61.5% {
+        stroke-dashoffset: 0.404;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    76% {
+        stroke-dashoffset: 0.248;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    83.3% {
+        stroke-dashoffset: 0.187;
+        animation-timing-function: cubic-bezier(0.2, 0.5, 0.35, 1);
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes trazo-hogar {
+    0% {
+        stroke-dashoffset: 1;
+        animation-timing-function: cubic-bezier(0.55, 0, 0.8, 0.5);
+    }
+    11.3% {
+        stroke-dashoffset: 0.889;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    17.2% {
+        stroke-dashoffset: 0.842;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    30.2% {
+        stroke-dashoffset: 0.71;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    37.8% {
+        stroke-dashoffset: 0.644;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    52.2% {
+        stroke-dashoffset: 0.491;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    60.2% {
+        stroke-dashoffset: 0.421;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    74.5% {
+        stroke-dashoffset: 0.269;
+        animation-timing-function: cubic-bezier(0.4, 0.1, 0.6, 0.9);
+    }
+    82.2% {
+        stroke-dashoffset: 0.204;
+        animation-timing-function: cubic-bezier(0.2, 0.5, 0.35, 1);
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes hoja-entra {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
     }
 }
 

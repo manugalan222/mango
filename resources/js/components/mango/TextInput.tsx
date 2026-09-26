@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/input';
+import { ManoIcon } from '@/components/mango/ManoIcon';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { TriangleAlert } from 'lucide-react';
 import { ComponentProps, ReactNode } from 'react';
 
 /**
@@ -48,7 +48,7 @@ export function TextInput({
 
             {error && (
                 <p id={idError} role="alert" className="text-mango-texto flex items-start gap-1.5 text-sm font-semibold">
-                    <TriangleAlert aria-hidden className="mt-px size-4 shrink-0" />
+                    <ManoIcon nombre="alerta" className="mt-px size-4" />
                     {error}
                 </p>
             )}

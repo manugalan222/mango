@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
+import { ManoIcon } from '@/components/mango/ManoIcon';
 import { MiembroAvatar, type ColorMiembro } from './MiembroAvatar';
 
 /**
@@ -42,7 +42,7 @@ export function TareaRow({
                     hecha ? 'bg-verde-dato text-on-mango' : 'border-input border-[1.5px]',
                 )}
             >
-                {hecha && <Check className="size-3" strokeWidth={3.5} />}
+                {hecha && <ManoIcon nombre="tilde" className="size-3" strokeWidth={3.5} />}
             </span>
             <span className={hecha ? 'text-tinta-3 line-through' : ''}>{texto}</span>
             <MiembroAvatar nombre={quien} color={color} mini className="ml-auto" />

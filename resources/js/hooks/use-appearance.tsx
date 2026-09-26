@@ -27,7 +27,11 @@ export function initializeTheme() {
 }
 
 export function useAppearance() {
-    const [appearance, setAppearance] = useState<Appearance>('system');
+    // Lazy: lee el modo guardado ya en el primer render. Si arrancaba en
+    // 'system' y el SO prefiere oscuro, `ModoToggle` prendía su luz mango un
+    // instante de más en cada navegación —el layout se remonta por página—
+    // hasta que este efecto corregía a 'light'. Eso era el pestañeo.
+    const [appearance, setAppearance] = useState<Appearance>(() => (localStorage.getItem('appearance') as Appearance) || 'system');
 
     const updateAppearance = (mode: Appearance) => {
         setAppearance(mode);
@@ -36,9 +40,7 @@ export function useAppearance() {
     };
 
     useEffect(() => {
-        const savedAppearance = localStorage.getItem('appearance') as Appearance | null;
-        updateAppearance(savedAppearance || 'system');
-
+        mediaQuery.addEventListener('change', handleSystemThemeChange);
         return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
     }, []);
 

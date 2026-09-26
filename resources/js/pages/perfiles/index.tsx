@@ -1,4 +1,5 @@
 import { COLORES_MIEMBRO, FONDOS, MiembroAvatar } from '@/components/mango/MiembroAvatar';
+import { ManoIcon } from '@/components/mango/ManoIcon';
 import { TextInput } from '@/components/mango/TextInput';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,6 @@ import { usePerfiles } from '@/hooks/use-perfiles';
 import { cn } from '@/lib/utils';
 import { type Perfil } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { Pencil, Plus, TriangleAlert, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 /**
@@ -39,22 +39,17 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
                     <p className="text-tinta-2 mt-1 text-sm">Elegí tu perfil para entrar.</p>
                 </div>
 
-                <ul className="flex flex-wrap items-start justify-center gap-8">
+                <ul className="flex flex-wrap items-start justify-center gap-6">
                     {perfiles.map((perfil) => (
-                        <li key={perfil.id} className="flex flex-col items-center gap-2">
+                        <li key={perfil.id} className="mat-hoja rounded-placa flex w-40 flex-col items-center gap-3 p-5">
                             <Link
                                 href={route('dashboard')}
                                 aria-label={`Entrar como ${perfil.nombre}`}
-                                className="rounded-hoja group focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-4 focus-visible:outline-hidden"
+                                className="rounded-hoja focus-visible:ring-ring flex flex-col items-center gap-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden"
                             >
-                                <MiembroAvatar
-                                    nombre={perfil.nombre}
-                                    color={perfil.color}
-                                    className="size-28 transition-transform duration-120 ease-out group-hover:scale-105"
-                                />
+                                <MiembroAvatar nombre={perfil.nombre} color={perfil.color} className="size-20" />
+                                <span className="max-w-28 truncate text-sm font-semibold">{perfil.nombre}</span>
                             </Link>
-
-                            <span className="max-w-28 truncate text-sm font-semibold">{perfil.nombre}</span>
 
                             <div className="flex gap-1">
                                 <Button
@@ -64,13 +59,13 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
                                     aria-label={`Editar a ${perfil.nombre}`}
                                     onClick={() => editar(perfil)}
                                 >
-                                    <Pencil aria-hidden className="size-4" />
+                                    <ManoIcon nombre="lapiz" className="size-4" />
                                 </Button>
 
                                 <Dialog>
                                     <DialogTrigger asChild>
                                         <Button type="button" variant="ghost" size="icon" aria-label={`Eliminar a ${perfil.nombre}`}>
-                                            <Trash2 aria-hidden className="size-4" />
+                                            <ManoIcon nombre="papelera" className="size-4" />
                                         </Button>
                                     </DialogTrigger>
                                     <DialogContent>
@@ -95,16 +90,18 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
                     ))}
 
                     {!casaCompleta && (
-                        <li className="flex flex-col items-center gap-2">
+                        <li className="rounded-placa border-tinta-3/30 text-tinta-3 hover:border-mango-texto hover:text-mango-texto flex w-40 flex-col items-center gap-3 border-2 border-dashed p-5 transition-colors duration-150">
                             <button
                                 type="button"
                                 onClick={() => setCreando(true)}
                                 aria-label="Crear un perfil nuevo"
-                                className="rounded-hoja border-tinta-3/30 text-tinta-3 hover:border-mango-texto hover:text-mango-texto flex size-28 items-center justify-center border-2 border-dashed transition-colors duration-150"
+                                className="flex flex-col items-center gap-2"
                             >
-                                <Plus aria-hidden className="size-8" />
+                                <span className="rounded-hoja grid size-20 place-items-center border-2 border-dashed border-current">
+                                    <ManoIcon nombre="mas" className="size-8" />
+                                </span>
+                                <span className="text-sm font-semibold">Agregar perfil</span>
                             </button>
-                            <span className="text-tinta-2 text-sm font-semibold">Agregar perfil</span>
                         </li>
                     )}
                 </ul>
@@ -172,7 +169,7 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
 
                             {errors.color && (
                                 <p role="alert" className="text-mango-texto flex items-start gap-1.5 text-sm font-semibold">
-                                    <TriangleAlert aria-hidden className="mt-px size-4 shrink-0" />
+                                    <ManoIcon nombre="alerta" className="mt-px size-4" />
                                     {errors.color}
                                 </p>
                             )}

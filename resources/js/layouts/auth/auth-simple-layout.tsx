@@ -1,5 +1,6 @@
 import { MangoLogo } from '@/components/mango/MangoLogo';
 import { ModoToggle } from '@/components/mango/ModoToggle';
+import { PanelFondo } from '@/components/mango/PanelFondo';
 import { Link } from '@inertiajs/react';
 
 interface AuthLayoutProps {
@@ -12,18 +13,17 @@ interface AuthLayoutProps {
 /**
  * La puerta.
  *
- * Fondo verde plano — sin fibra, sin trama: es lo único de todo el sistema que
- * no lleva material, porque acá no estás adentro de la casa todavía. Sí lleva
- * `luz-ambiente`: la luz que se cuela antes de entrar, ventana en modo claro y
- * lámpara en modo oscuro. El formulario vive en una hoja de cuaderno a medio
- * llenar —rayado tenue, la misma tarjeta que el resto de la casa— apoyada
- * sobre esa luz, no en un arco.
+ * `PanelFondo`: el mismo material del verde que la barra superior —fibra,
+ * grano y la luz de la repisa, anclada arriba a la izquierda—. De día es
+ * ventana; de noche la misma luz se calienta a mango, sin moverse de lugar.
+ * El formulario vive en una hoja de cuaderno a medio llenar —rayado tenue, la
+ * misma tarjeta que el resto de la casa— apoyada sobre esa luz, no en un arco.
  *
  * El slogan va arriba, como el cartel sobre la puerta.
  */
 export default function AuthSimpleLayout({ children, title, description }: AuthLayoutProps) {
     return (
-        <div className="bg-panel luz-ambiente relative flex min-h-svh flex-col px-5 py-10">
+        <PanelFondo className="relative flex min-h-svh flex-col px-5 py-10">
             <ModoToggle variante="panel" className="absolute top-5 right-5" />
 
             {/* `m-auto` en vez de `justify-center`: centra igual, y si el formulario
@@ -50,6 +50,6 @@ export default function AuthSimpleLayout({ children, title, description }: AuthL
                     </div>
                 </div>
             </div>
-        </div>
+        </PanelFondo>
     );
 }

@@ -1,5 +1,5 @@
 import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
+import { ManoIcon } from '@/components/mango/ManoIcon';
 import { FormEventHandler } from 'react';
 
 import { TextInput } from '@/components/mango/TextInput';
@@ -79,7 +79,7 @@ export default function Register() {
                 />
 
                 <Button type="submit" className="w-full" disabled={processing}>
-                    {processing && <LoaderCircle aria-hidden className="animate-spin" />}
+                    {processing && <ManoIcon nombre="cargando" className="animate-spin" />}
                     {processing ? 'Creando la casa' : 'Crear mi casa'}
                 </Button>
             </form>

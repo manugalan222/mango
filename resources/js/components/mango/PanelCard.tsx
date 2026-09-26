@@ -8,17 +8,21 @@ const ANCHOS = {
 } as const;
 
 /**
- * Hoja de cuaderno: rectángulo sobrio, contorno de tinta, sombra dura que se
- * despega al pasar el mouse. `oscura` la pasa a panel verde — para la única
- * tarjeta de logro por pantalla. `textura` es liso por defecto; rayado es la
- * única otra opción, y una sección usa una sola, nunca las dos mezcladas.
+ * Hoja de cuaderno chica: el mismo papel que la `HojaBoard` de Finanzas y
+ * Hogar —rayado, contorno de tinta, sombra dura, título escrito arriba como
+ * encabezado de página— en tamaño tarjeta, para un muro de `BentoGrid`. A
+ * diferencia de la hoja grande, ésta sí se despega al pasar el mouse.
+ *
+ * `oscura` la pasa a panel verde —para la única tarjeta de logro por
+ * pantalla—; `textura="liso"` le saca el rayado. Una sección usa una sola
+ * textura, nunca las dos mezcladas.
  */
 export function PanelCard({
     titulo,
     accion,
     ancho = 3,
     oscura = false,
-    textura = 'liso',
+    textura = 'rayado',
     children,
     className,
 }: {
@@ -33,7 +37,7 @@ export function PanelCard({
     return (
         <section
             className={cn(
-                'rounded-placa flex flex-col gap-3 p-4',
+                'rounded-placa flex flex-col gap-3 px-5 pt-5 pb-4',
                 oscura ? 'mat-hoja-oscura' : 'mat-hoja',
                 textura === 'rayado' && 'hoja-rayado',
                 ANCHOS[ancho],
@@ -41,12 +45,8 @@ export function PanelCard({
             )}
         >
             {(titulo || accion) && (
-                <header className="flex items-center justify-between gap-2">
-                    {titulo && (
-                        <h2 className={cn('text-[0.7rem] font-bold tracking-[0.11em] uppercase', oscura ? 'text-ambar' : 'text-tinta-3')}>
-                            {titulo}
-                        </h2>
-                    )}
+                <header className="flex items-start justify-between gap-2">
+                    {titulo && <h2 className={cn('text-xl leading-tight', oscura && 'text-panel-ink')}>{titulo}</h2>}
                     {accion}
                 </header>
             )}
