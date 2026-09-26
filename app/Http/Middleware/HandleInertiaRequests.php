@@ -44,6 +44,8 @@ class HandleInertiaRequests extends Middleware
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user(),
+                // El conviviente que eligió en "¿Quién anda por casa?".
+                'perfil' => fn () => $request->user()?->perfiles()->find($request->session()->get('perfil_id')),
             ],
         ]);
     }

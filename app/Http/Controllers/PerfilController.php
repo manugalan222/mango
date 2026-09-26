@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Perfil\EntrarPerfilRequest;
 use App\Http\Requests\Perfil\PerfilRequest;
 use App\Models\Perfil;
 use App\Services\PerfilService;
@@ -33,6 +34,20 @@ class PerfilController extends Controller
         $this->perfiles->actualizar($perfil, $request->validated());
 
         return to_route('perfiles.index');
+    }
+
+    /**
+     * Elegir perfil en "¿Quién anda por casa?": si el PIN coincide (o no
+     * tiene), el perfil queda activo en la sesión hasta cerrar sesión o
+     * elegir otro.
+     */
+    public function entrar(EntrarPerfilRequest $request, Perfil $perfil): RedirectResponse
+    {
+        $this->perfiles->verificarEntrada($perfil, $request->validated('pin'));
+
+        $request->session()->put('perfil_id', $perfil->id);
+
+        return to_route('dashboard');
     }
 
     public function destroy(Request $request, Perfil $perfil): RedirectResponse

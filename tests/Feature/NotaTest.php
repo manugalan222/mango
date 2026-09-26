@@ -146,7 +146,11 @@ class NotaTest extends TestCase
     public function test_a_hogar_view_can_be_rendered()
     {
         $casa = User::factory()->create();
+        $perfil = Perfil::factory()->for($casa)->create();
 
-        $this->actingAs($casa)->get('/hogar')->assertOk();
+        $this->actingAs($casa)
+            ->withSession(['perfil_id' => $perfil->id])
+            ->get('/hogar')
+            ->assertOk();
     }
 }

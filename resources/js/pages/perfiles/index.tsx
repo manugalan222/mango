@@ -4,11 +4,14 @@ import { PanelFondo } from '@/components/mango/PanelFondo';
 import { TextInput } from '@/components/mango/TextInput';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { useEntrarPerfil } from '@/hooks/use-entrar-perfil';
 import { usePerfiles } from '@/hooks/use-perfiles';
 import { cn } from '@/lib/utils';
 import { type Perfil } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { useState } from 'react';
 
 /**
@@ -20,6 +23,7 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
     const { data, setData, processing, errors, editando, editar, cancelar, guardar, eliminar } = usePerfiles({
         alGuardar: () => setCreando(false),
     });
+    const entrada = useEntrarPerfil();
 
     const abierto = creando || editando !== null;
     const casaCompleta = perfiles.length >= COLORES_MIEMBRO.length;
@@ -43,14 +47,19 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
                 <ul className="flex flex-wrap items-start justify-center gap-6">
                     {perfiles.map((perfil) => (
                         <li key={perfil.id} className="mat-hoja rounded-placa flex w-40 flex-col items-center gap-3 p-5">
-                            <Link
-                                href={route('dashboard')}
-                                aria-label={`Entrar como ${perfil.nombre}`}
+                            <button
+                                type="button"
+                                onClick={() => entrada.elegir(perfil)}
+                                disabled={entrada.processing}
+                                aria-label={`Entrar como ${perfil.nombre}${perfil.tiene_pin ? ', pide PIN' : ''}`}
                                 className="rounded-hoja focus-visible:ring-ring flex flex-col items-center gap-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden"
                             >
                                 <MiembroAvatar nombre={perfil.nombre} color={perfil.color} className="size-20" />
-                                <span className="max-w-28 truncate text-sm font-semibold">{perfil.nombre}</span>
-                            </Link>
+                                <span className="flex max-w-28 items-center gap-1 text-sm font-semibold">
+                                    <span className="truncate">{perfil.nombre}</span>
+                                    {perfil.tiene_pin && <ManoIcon nombre="candado" className="size-3.5 shrink-0" aria-hidden />}
+                                </span>
+                            </button>
 
                             <div className="flex gap-1">
                                 <Button
@@ -134,14 +143,34 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
 
                         <TextInput
                             id="pin"
-                            label="PIN"
-                            ayuda="4 a 6 números. Dejalo vacío para no usar PIN."
+                            label={editando?.tiene_pin ? 'PIN nuevo' : 'PIN'}
+                            ayuda={
+                                editando?.tiene_pin
+                                    ? '4 a 6 números. Dejalo vacío para mantener el PIN actual.'
+                                    : '4 a 6 números. Dejalo vacío para no usar PIN.'
+                            }
                             value={data.pin}
-                            onChange={(e) => setData('pin', e.target.value)}
+                            onChange={(e) => setData('pin', e.target.value.replace(/\D/g, ''))}
                             error={errors.pin}
+                            type="password"
                             inputMode="numeric"
-                            autoComplete="off"
+                            maxLength={6}
+                            autoComplete="new-password"
+                            disabled={data.quitar_pin}
                         />
+
+                        {editando?.tiene_pin && (
+                            <div className="flex items-center gap-2">
+                                <Checkbox
+                                    id="quitar_pin"
+                                    checked={data.quitar_pin}
+                                    onCheckedChange={(v) => setData((d) => ({ ...d, quitar_pin: v === true, pin: '' }))}
+                                />
+                                <Label htmlFor="quitar_pin" className="font-normal">
+                                    Quitar el PIN de {editando.nombre}
+                                </Label>
+                            </div>
+                        )}
 
                         <div className="grid gap-1.5">
                             <span className="text-sm font-medium">Color</span>
@@ -182,6 +211,38 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
                             </Button>
                             <Button type="submit" disabled={processing}>
                                 {editando ? 'Guardar cambios' : 'Crear perfil'}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={entrada.pidiendo !== null} onOpenChange={(open) => !open && entrada.cerrar()}>
+                <DialogContent>
+                    <DialogTitle>Hola, {entrada.pidiendo?.nombre}</DialogTitle>
+                    <DialogDescription>Este perfil tiene PIN. Escribilo para entrar.</DialogDescription>
+
+                    <form onSubmit={entrada.entrar} className="grid gap-4">
+                        <TextInput
+                            id="pin-entrada"
+                            label="PIN"
+                            value={entrada.data.pin}
+                            onChange={(e) => entrada.setData('pin', e.target.value.replace(/\D/g, ''))}
+                            error={entrada.errors.pin}
+                            type="password"
+                            inputMode="numeric"
+                            maxLength={6}
+                            autoComplete="off"
+                            autoFocus
+                            required
+                        />
+
+                        <DialogFooter>
+                            <Button type="button" variant="pana" onClick={entrada.cerrar}>
+                                Cancelar
+                            </Button>
+                            <Button type="submit" disabled={entrada.processing || entrada.data.pin.length < 4}>
+                                Entrar
                             </Button>
                         </DialogFooter>
                     </form>

@@ -7,6 +7,7 @@ const FORM_VACIO = {
     nombre: '',
     color: '' as ColorMiembro | '',
     pin: '',
+    quitar_pin: false,
 };
 
 /**
@@ -14,7 +15,7 @@ const FORM_VACIO = {
  * `editar` lo precarga con un perfil existente, `cancelar` lo vuelve a dejar
  * vacío. El PIN nunca llega del servidor (el modelo lo oculta), así que
  * editar un perfil siempre empieza con el campo en blanco — si se manda vacío,
- * el perfil queda sin PIN.
+ * el perfil conserva el PIN que tenía. Para sacarlo, `quitar_pin`.
  */
 export function usePerfiles({ alGuardar }: { alGuardar?: () => void } = {}) {
     const [editando, setEditando] = useState<Perfil | null>(null);
@@ -23,7 +24,7 @@ export function usePerfiles({ alGuardar }: { alGuardar?: () => void } = {}) {
     const editar = (perfil: Perfil) => {
         setEditando(perfil);
         clearErrors();
-        setData({ nombre: perfil.nombre, color: perfil.color, pin: '' });
+        setData({ nombre: perfil.nombre, color: perfil.color, pin: '', quitar_pin: false });
     };
 
     const cancelar = () => {
