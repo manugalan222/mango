@@ -2,7 +2,7 @@ import { ManoIcon } from '@/components/mango/ManoIcon';
 import { useAppearance } from '@/hooks/use-appearance';
 import { cn } from '@/lib/utils';
 
-interface ModoToggleProps {
+interface DarkModeButtonProps {
     /** Sobre qué material se apoya el botón, para elegir un color legible. */
     variante?: 'papel' | 'panel' | 'fondo';
     className?: string;
@@ -12,7 +12,7 @@ interface ModoToggleProps {
  * El interruptor de luz de la casa: prendida es modo oscuro, apagada es modo claro.
  * Alterna sólo entre esos dos —el selector de "system" queda en Ajustes.
  */
-export function ModoToggle({ variante = 'papel', className }: ModoToggleProps) {
+export function DarkModeButton({ variante = 'papel', className }: DarkModeButtonProps) {
     const { appearance, updateAppearance } = useAppearance();
     const encendida = appearance === 'dark' || (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 

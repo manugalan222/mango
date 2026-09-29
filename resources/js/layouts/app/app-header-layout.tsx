@@ -1,5 +1,5 @@
 import { AppContent } from '@/components/app-content';
-import { AppHeader } from '@/components/app-header';
+import { Navbar } from '@/components/navbar/Navbar';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { PanelFondo } from '@/components/mango/PanelFondo';
 import { type BreadcrumbItem } from '@/types';
@@ -12,7 +12,7 @@ import { type BreadcrumbItem } from '@/types';
 export default function AppHeaderLayout({ children, breadcrumbs = [] }: { children: React.ReactNode; breadcrumbs?: BreadcrumbItem[] }) {
     return (
         <PanelFondo className="flex min-h-screen w-full flex-col">
-            <AppHeader />
+            <Navbar />
             <AppContent>
                 {breadcrumbs.length > 0 && (
                     <div className="px-4 pt-4 md:px-6">

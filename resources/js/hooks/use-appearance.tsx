@@ -28,7 +28,7 @@ export function initializeTheme() {
 
 export function useAppearance() {
     // Lazy: lee el modo guardado ya en el primer render. Si arrancaba en
-    // 'system' y el SO prefiere oscuro, `ModoToggle` prendía su luz mango un
+    // 'system' y el SO prefiere oscuro, `DarkModeButton` prendía su luz mango un
     // instante de más en cada navegación —el layout se remonta por página—
     // hasta que este efecto corregía a 'light'. Eso era el pestañeo.
     const [appearance, setAppearance] = useState<Appearance>(() => (localStorage.getItem('appearance') as Appearance) || 'system');

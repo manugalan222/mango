@@ -1,13 +1,13 @@
-import { ManoIcon } from '@/components/mango/ManoIcon';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-import { TextInput } from '@/components/mango/TextInput';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
+import { SubrayadoLink } from '@/components/compartidos/SubrayadoLink';
+import { AvisoBanner } from '@/components/formulario/AvisoBanner';
+import { EnviarButton } from '@/components/formulario/EnviarButton';
+import { TextInput } from '@/components/formulario/TextInput';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import AuthLayout from '@/layouts/auth-layout';
+import { PuertaLayout } from '@/layouts/PuertaLayout';
 
 interface LoginProps {
     status?: string;
@@ -29,14 +29,10 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     };
 
     return (
-        <AuthLayout title="Entrá a tu casa" description="Una sola cuenta por hogar. Adentro elegís tu perfil.">
+        <PuertaLayout titulo="Entrá a tu casa" descripcion="Una sola cuenta por hogar. Adentro elegís tu perfil.">
             <Head title="Entrar" />
 
-            {status && (
-                <p role="status" className="bg-ok-bg text-ok-ink rounded-lg px-3 py-2.5 text-sm font-semibold">
-                    {status}
-                </p>
-            )}
+            {status && <AvisoBanner>{status}</AvisoBanner>}
 
             <form className="flex flex-col gap-5" onSubmit={enviar}>
                 <TextInput
@@ -63,7 +59,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     onChange={(e) => setData('password', e.target.value)}
                     error={errors.password}
                     disabled={processing}
-                    accion={canResetPassword ? <TextLink href={route('password.request')}>La olvidé</TextLink> : undefined}
+                    accion={canResetPassword ? <SubrayadoLink href={route('password.request')}>La olvidé</SubrayadoLink> : undefined}
                 />
 
                 <div className="flex items-center gap-2.5">
@@ -79,15 +75,14 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     </Label>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={processing}>
-                    {processing && <ManoIcon nombre="cargando" className="animate-spin" />}
-                    {processing ? 'Entrando' : 'Entrar'}
-                </Button>
+                <EnviarButton procesando={processing} textoProcesando="Entrando" className="w-full">
+                    Entrar
+                </EnviarButton>
             </form>
 
             <p className="text-tinta-2 text-center text-sm">
-                ¿Todavía no tenés casa acá? <TextLink href={route('register')}>Armá una</TextLink>
+                ¿Todavía no tenés casa acá? <SubrayadoLink href={route('register')}>Armá una</SubrayadoLink>
             </p>
-        </AuthLayout>
+        </PuertaLayout>
     );
 }

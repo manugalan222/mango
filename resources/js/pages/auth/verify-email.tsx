@@ -1,41 +1,34 @@
-import { ManoIcon } from '@/components/mango/ManoIcon';
-// Components
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import AuthLayout from '@/layouts/auth-layout';
+import { SubrayadoLink } from '@/components/compartidos/SubrayadoLink';
+import { AvisoBanner } from '@/components/formulario/AvisoBanner';
+import { EnviarButton } from '@/components/formulario/EnviarButton';
+import { PuertaLayout } from '@/layouts/PuertaLayout';
 
 export default function VerifyEmail({ status }: { status?: string }) {
     const { post, processing } = useForm({});
 
-    const submit: FormEventHandler = (e) => {
+    const enviar: FormEventHandler = (e) => {
         e.preventDefault();
-
         post(route('verification.send'));
     };
 
     return (
-        <AuthLayout title="Verify email" description="Please verify your email address by clicking on the link we just emailed to you.">
-            <Head title="Email verification" />
+        <PuertaLayout titulo="Verificá el correo" descripcion="Te mandamos un enlace al correo de la casa. Abrilo para terminar de entrar.">
+            <Head title="Verificar el correo" />
 
-            {status === 'verification-link-sent' && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    A new verification link has been sent to the email address you provided during registration.
-                </div>
-            )}
+            {status === 'verification-link-sent' && <AvisoBanner>Te mandamos un enlace nuevo al correo con el que armaste la casa.</AvisoBanner>}
 
-            <form onSubmit={submit} className="space-y-6 text-center">
-                <Button disabled={processing} variant="secondary">
-                    {processing && <ManoIcon nombre="cargando" className="h-4 w-4 animate-spin" />}
-                    Resend verification email
-                </Button>
+            <form onSubmit={enviar} className="flex flex-col items-center gap-5">
+                <EnviarButton procesando={processing} textoProcesando="Mandando" variant="pana" className="w-full">
+                    Mandar el enlace de nuevo
+                </EnviarButton>
 
-                <TextLink href={route('logout')} method="post" className="mx-auto block text-sm">
-                    Log out
-                </TextLink>
+                <SubrayadoLink href={route('logout')} method="post" as="button" className="text-sm">
+                    Cerrar sesión
+                </SubrayadoLink>
             </form>
-        </AuthLayout>
+        </PuertaLayout>
     );
 }

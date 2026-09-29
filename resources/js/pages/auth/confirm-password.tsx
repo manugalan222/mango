@@ -1,60 +1,42 @@
-import { ManoIcon } from '@/components/mango/ManoIcon';
-// Components
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import AuthLayout from '@/layouts/auth-layout';
+import { EnviarButton } from '@/components/formulario/EnviarButton';
+import { TextInput } from '@/components/formulario/TextInput';
+import { PuertaLayout } from '@/layouts/PuertaLayout';
 
 export default function ConfirmPassword() {
     const { data, setData, post, processing, errors, reset } = useForm({
         password: '',
     });
 
-    const submit: FormEventHandler = (e) => {
+    const enviar: FormEventHandler = (e) => {
         e.preventDefault();
-
-        post(route('password.confirm'), {
-            onFinish: () => reset('password'),
-        });
+        post(route('password.confirm'), { onFinish: () => reset('password') });
     };
 
     return (
-        <AuthLayout
-            title="Confirm your password"
-            description="This is a secure area of the application. Please confirm your password before continuing."
-        >
-            <Head title="Confirm password" />
+        <PuertaLayout titulo="Confirmá la contraseña" descripcion="Esta parte de la casa pide la contraseña otra vez antes de seguir.">
+            <Head title="Confirmar la contraseña" />
 
-            <form onSubmit={submit}>
-                <div className="space-y-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input
-                            id="password"
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            autoComplete="current-password"
-                            value={data.password}
-                            autoFocus
-                            onChange={(e) => setData('password', e.target.value)}
-                        />
+            <form className="flex flex-col gap-5" onSubmit={enviar}>
+                <TextInput
+                    id="password"
+                    label="Contraseña"
+                    type="password"
+                    required
+                    autoFocus
+                    autoComplete="current-password"
+                    value={data.password}
+                    onChange={(e) => setData('password', e.target.value)}
+                    error={errors.password}
+                    disabled={processing}
+                />
 
-                        <InputError message={errors.password} />
-                    </div>
-
-                    <div className="flex items-center">
-                        <Button className="w-full" disabled={processing}>
-                            {processing && <ManoIcon nombre="cargando" className="h-4 w-4 animate-spin" />}
-                            Confirm password
-                        </Button>
-                    </div>
-                </div>
+                <EnviarButton procesando={processing} textoProcesando="Confirmando" className="w-full">
+                    Confirmar
+                </EnviarButton>
             </form>
-        </AuthLayout>
+        </PuertaLayout>
     );
 }

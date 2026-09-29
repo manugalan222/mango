@@ -73,6 +73,7 @@
        esto es la capa de marca, para cuando un componente necesita el material y no el rol. */
     --color-yeso: var(--yeso);
     --color-lino: var(--lino);
+    --color-papel: var(--papel);
     --color-panel: var(--panel);
     --color-panel-ink: var(--panel-ink);
     --color-fondo: var(--fondo);
@@ -103,6 +104,7 @@
     /* materia */
     --yeso: oklch(0.9368 0.0194 80.12); /* muro de yeso cálido */
     --lino: oklch(0.9743 0.0143 84.58); /* superficie elevada */
+    --papel: oklch(0.9925 0.0065 85); /* anotador: más blanco que la hoja en la que se apoya */
     --panel: oklch(0.3195 0.0335 157.53); /* verde sillón */
     --panel-ink: oklch(0.9277 0.0235 82.12);
     --tinta: oklch(0.2502 0.0214 53.96); /* espresso, nunca negro puro */
@@ -198,6 +200,7 @@
 .dark {
     --yeso: oklch(0.202 0.0114 48.13);
     --lino: oklch(0.2343 0.0157 53.75);
+    --papel: oklch(0.2745 0.0172 54);
     --panel: oklch(0.3809 0.0459 155.37);
     --panel-ink: oklch(0.929 0.0216 76.53);
     --tinta: oklch(0.929 0.0216 76.53);
@@ -400,6 +403,72 @@
         color: var(--tinta);
     }
 
+    /* Anotador: una hoja chica suelta, apoyada ENCIMA de la hoja rayada de una
+       sección, para que lo escrito no se pierda entre renglones. Papel liso
+       —nunca rayado: sería renglón sobre renglón—, contorno y sombra más
+       chicos que la hoja (es un objeto más chico, más cerca), y un giro propio
+       en `--giro` que lo hace ver tirado a mano. Se despega igual que todo.
+
+       Papel `--papel` por defecto. Los tonos pastel (`bg-mango-suave`,
+       `bg-ok-bg`…) son para notas adhesivas: sobre ellos sólo `tinta` y
+       `tinta-2` llegan a 4,5:1 en los dos modos —un monto con tono de
+       ingreso/egreso va en papel—. */
+    .mat-anotador {
+        --giro: 0deg;
+        position: relative;
+        isolation: isolate;
+        background-color: var(--papel);
+        color: var(--tinta);
+        border: 2px solid var(--tinta);
+        box-shadow: 3px 4px 0 0 var(--tinta);
+        transform: rotate(var(--giro));
+        transition:
+            transform 170ms cubic-bezier(0.34, 1.56, 0.64, 1),
+            box-shadow 170ms ease;
+    }
+    .mat-anotador:hover {
+        transform: translate(-2px, -3px) rotate(calc(var(--giro) - 0.4deg));
+        box-shadow: 5px 7px 0 0 var(--tinta);
+    }
+    .mat-anotador:active {
+        transform: translate(0, 0) rotate(var(--giro));
+        box-shadow: 2px 2px 0 0 var(--tinta);
+    }
+
+    /* Espiral: el anotador de almacén, anillado arriba. Acento ocasional —uno
+       por pantalla—: el anillo se dibuja como máscara para que tome la tinta
+       del modo. Cada anillo nace del agujero, pasa por encima del borde y
+       vuelve a entrar. */
+    .anotador-espiral {
+        position: absolute;
+        top: -11px;
+        left: 14px;
+        right: 14px;
+        height: 24px;
+        pointer-events: none;
+        background-color: var(--tinta);
+        -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='24'><circle cx='11' cy='17.6' r='2.4'/><path d='M8.6 17.4 C7.6 9.8 8.2 3.4 11 2.6 C13.8 3.2 14.3 9.6 13.2 17.2' fill='none' stroke='black' stroke-width='2.3' stroke-linecap='round'/></svg>")
+            left top / 22px 24px repeat-x;
+        mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='24'><circle cx='11' cy='17.6' r='2.4'/><path d='M8.6 17.4 C7.6 9.8 8.2 3.4 11 2.6 C13.8 3.2 14.3 9.6 13.2 17.2' fill='none' stroke='black' stroke-width='2.3' stroke-linecap='round'/></svg>")
+            left top / 22px 24px repeat-x;
+    }
+
+    /* Cinta: un pedazo de cinta de papel que sostiene el anotador contra la
+       hoja. Translúcida —se ve el borde de tinta a través— y con las puntas
+       cortadas con los dedos, no con tijera. */
+    .anotador-cinta {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        width: 78px;
+        height: 22px;
+        pointer-events: none;
+        translate: -50% 0;
+        rotate: -3deg;
+        background-color: color-mix(in oklch, var(--arcilla) 62%, transparent);
+        clip-path: polygon(3% 0, 97% 0, 94% 22%, 98% 45%, 95% 70%, 99% 100%, 2% 100%, 6% 76%, 1% 52%, 5% 28%);
+    }
+
     /* Rayado: la única textura de papel además de liso. Va como pseudo-elemento
        para no gastar un nodo por tarjeta; z-index negativo, la pinta detrás del
        contenido sin que haga falta tocar el z-index de cada hijo. */
@@ -498,7 +567,7 @@
 
 /* Una parada por giro del zigzag de cada destino (el vértice, medido sobre el
    trazo suavizado); el tiempo de cada tramo crece menos que su largo. Si se
-   cambia un zigzag en `nav-main.tsx`, hay que volver a medir estas paradas. */
+   cambia un zigzag en `navbar/SectionNavbar.tsx`, hay que volver a medir estas paradas. */
 @keyframes trazo-dashboard {
     0% {
         stroke-dashoffset: 1;

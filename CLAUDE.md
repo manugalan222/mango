@@ -41,7 +41,7 @@ Tres excepciones que **no** se renombran:
 2. `pages/**` — Inertia los resuelve por la cadena que manda el servidor (`Inertia::render('dashboard')`). El nombre del archivo es parte del contrato con PHP.
 
 **Layout persistente:** una página de app **no** se envuelve en `<AppLayout>` dentro de su JSX; lo declara aparte, `Pagina.layout = (page: ReactNode) => <AppLayout>{page}</AppLayout>;` (con `breadcrumbs` si hace falta). Así Inertia mantiene montada la barra al navegar y sólo cambia el contenido. Envuelta adentro, la barra se desmonta en cada click y el subrayado nace ya dibujado, sin animar.
-3. Los archivos que vienen del starter kit (`app-sidebar.tsx`, `nav-main.tsx`, `input-error.tsx`…). La convención es para lo que escribimos nosotros; renombrar lo ajeno sólo agrega ruido al diff.
+3. Los archivos que vienen del starter kit y todavía no se limpiaron (`input-error.tsx`, `delete-user.tsx`…). La convención es para lo que escribimos nosotros; renombrar lo ajeno sólo agrega ruido al diff.
 
 ---
 
@@ -55,7 +55,7 @@ Consecuencias que ya están en el código:
 
 - El registro pide **el nombre de la casa**, no el de la persona.
 - El login dice *"Entrá a tu casa"* y el campo es *"Correo de la casa"*.
-- `AppLogo` muestra `auth.user.name` debajo de la marca: es el nombre del hogar.
+- `BrandLogo` muestra `auth.user.name` debajo de la marca: es el nombre del hogar.
 - `types/index.ts` exporta `Casa` como alias de `User`, con la advertencia.
 
 Consecuencias pendientes:
@@ -63,7 +63,7 @@ Consecuencias pendientes:
 - La tabla de perfiles ya existe (`Perfil`, `pages/perfiles/index.tsx`, el selector "¿Quién anda por casa?" post-registro). Elegir un perfil hace `POST perfiles/{perfil}/entrar` (hook `use-entrar-perfil`): si tiene PIN lo pide, lo chequea el `PerfilService` (5 intentos por perfil y espera) y guarda `perfil_id` en sesión. El middleware `perfil` (`EnsurePerfilElegido`) cuida `/dashboard`, `/finanzas` y `/hogar`; sin perfil válido vuelve a `/perfiles`. El perfil activo viaja como `auth.perfil`.
 - El PIN se guarda hasheado y nunca viaja al front: sólo `tiene_pin`. Editar con el PIN vacío **lo conserva**; para sacarlo se manda `quitar_pin`.
 - `MiembroAvatar` y `COLORES_MIEMBRO` ya están pensados para perfiles, no para usuarios.
-- `NavUser`, en la barra superior, hoy muestra la casa (Ajustes, Cerrar sesión); va a ser el **cambiador de perfil**.
+- `UserMenu`, en la barra superior, hoy muestra la casa (Ajustes, Cerrar sesión); va a ser el **cambiador de perfil**.
 - Cuando el perfil activo viaje en sesión, la persona deja de ser `User` en todo el código de tareas/gastos.
 
 ---
@@ -133,12 +133,15 @@ Verde = completado. Mango = seleccionado o urgente. Son significados distintos y
 | `.mat-hoja` | papel liso, contorno de tinta, sombra dura | tarjetas |
 | `.mat-hoja-oscura` | la misma hoja, sobre panel verde | la única tarjeta de logro por pantalla |
 | `.hoja-rayado` | rayado de cuaderno (pseudo-elemento, se suma a `.mat-hoja`) | la sección que necesite esa textura — nunca las dos a la vez |
+| `.mat-anotador` + `.anotador-espiral`/`.anotador-cinta` | papel **liso** (`--papel`), contorno y sombra más chicos, giro propio (`--giro`) | lo escrito dentro de una `HojaBoard`: anotadores y notas adhesivas apoyados sobre la hoja rayada (`AnotadorCard`) |
 | `.mat-pegatina` + `.mat-pegatina-mango`/`-verde`/`-lino` | pastilla de tinta y sombra dura | botones (primario, secundario, alternativa guardada) |
 | `.mat-fondo` | `--fondo` (yeso de día, verde de noche), fibra, grano y luz, fijo al viewport | el fondo de la casa: `PanelFondo` y la barra superior |
 | `.mat-panel-liso` | verde en los dos modos, fibra, grano y caída de luz, fijo al viewport | la puerta de auth (`PanelFondo tono="puerta"`) |
 | `.mat-vidrio` | desenfoque | toasts, modales |
 
 `.hoja-fija` se suma a `.mat-hoja` para la hoja que **no** se levanta al pasar el mouse: la `HojaBoard`, que ocupa la página y en `SeccionTabs` lleva marcadores montados en el borde — si se despegara, los marcadores quedarían flotando aparte. Las hojas chicas (`PanelCard`) sí se despegan.
+
+**Nada se escribe directo sobre el rayado de una `HojaBoard`.** Los renglones se comen el texto: el contenido de cada pestaña va en `AnotadorCard`s apoyadas encima —papel liso, así no es renglón sobre renglón—. La espiral es el acento (una por pantalla, punto 4 más abajo); el resto va con cinta. Los tonos pastel (`tono="mango"`, `"verde"`…) son notas adhesivas: sobre ellos sólo `tinta` y `tinta-2` pasan 4,5:1 en los dos modos (medido), así que un monto con tono de ingreso/egreso, o texto `tinta-3`, va en `papel`. `TONO_DE_MIEMBRO` le da a cada conviviente el pastel de su color.
 
 Un objeto lleva **un** material. La pátina de desgaste (una mancha de `--arcilla` casi insinuada, 16% de opacidad, `mix-blend-mode`) viene **incluida** en `.mat-hoja`/`.mat-hoja-oscura` — no es una clase aparte, así no hay que acordarse de sumarla tarjeta por tarjeta.
 
@@ -183,7 +186,7 @@ Todo detrás de `prefers-reduced-motion`, ya cubierto globalmente en `app.css`.
 - El error va **debajo del campo**, no en un resumen arriba, con ícono y `role="alert"`, enlazado por `aria-describedby` y con `aria-invalid` en el input.
 - Los errores dicen **qué pasó y cómo arreglarlo**. Sin "Ups", sin caritas, sin disculpas.
 - La ayuda va debajo del campo, en `--tinta-2`, antes del error.
-- Usar `<TextInput>` de `components/mango/TextInput.tsx`, que cablea todo eso.
+- Usar `<TextInput>` de `components/formulario/TextInput.tsx`, que cablea todo eso (el error lo pone `ErrorText`), y `<EnviarButton>` para mandar.
 - `useForm` **sin genérico explícito**: se infiere del estado inicial y evita la restricción de índice de `FormDataType`.
 
 ### Idioma de los mensajes
@@ -210,13 +213,13 @@ El array `attributes` de `lang/es/validation.php` nombra los campos **con artíc
 | --- | --- |
 | `HojaIcon.tsx` | el símbolo de marca |
 | `MangoLogo.tsx` | el logotipo dibujado |
-| `TextInput.tsx` | label + input + ayuda + error, todo cableado |
 | `PlataText.tsx` | todo monto, en es-AR y tabular (+ `formatearPesos`) |
 | `EstadoBadge.tsx` | estado de un pago o una tarea (lino) |
 | `SelloBadge.tsx` | logro, en forma de hoja |
 | `MiembroAvatar.tsx` | identidad de cada conviviente (+ `COLORES_MIEMBRO`) |
 | `BentoGrid.tsx` | muro de galería de 6 columnas |
 | `PanelCard.tsx` | hoja chica del mismo papel que `HojaBoard` (rayada por defecto, título escrito arriba), anchos 2/3/4. El muro del dashboard |
+| `AnotadorCard.tsx` | anotador suelto sobre una `HojaBoard`: `sujecion` espiral/cinta, `tono` papel o pastel de nota adhesiva, `giro` en grados (+ `TONO_DE_MIEMBRO`) |
 | `HojaBoard.tsx` | la hoja grande de una página, rayada y fija, con el título adentro. Finanzas y Hogar (vía `SeccionTabs`) y ajustes |
 | `EstadoVacio.tsx` | ícono + qué falta + acción, para cuando todavía no hay datos reales |
 | `SeccionTabs.tsx` | la hoja de una sección con sus marcadores: sólo las subsecciones de lo que eligió la barra superior (Finanzas → Gastos, Deudas, Ahorros), nunca las de otra sección. Sincroniza `?tab=` |
@@ -236,11 +239,11 @@ Las barras llevan **etiqueta directa** en cada una: nadie tiene que cruzar una l
 
 ## De shadcn — modificados
 
-`ui/button.tsx` (variantes `almohadon`, `pana`, `ceramica` sobre `.mat-pegatina`; las claves de variante no cambiaron aunque el material sí, para no tener que tocar cada call site), `ui/input.tsx` (hundido), `ui/checkbox.tsx` (forma del sistema), `ui/label.tsx`, `input-error.tsx`, `text-link.tsx`, `ui/tabs.tsx` (restyleado para `SeccionTabs`, agregado con el CLI de shadcn).
+`ui/button.tsx` (variantes `almohadon`, `pana`, `ceramica` sobre `.mat-pegatina`; las claves de variante no cambiaron aunque el material sí, para no tener que tocar cada call site), `ui/input.tsx` (hundido), `ui/checkbox.tsx` (forma del sistema), `ui/label.tsx`, `input-error.tsx`, `ui/tabs.tsx` (restyleado para `SeccionTabs`, agregado con el CLI de shadcn).
 
 ## Navegación
 
-`components/app-header.tsx` — la barra superior, estilo Netflix: no hay sidebar. Logo pegado a la esquina izquierda, los tres destinos (`nav-main.tsx`) con aire entre sí, luz + perfil + cerrar sesión a la derecha. Barra y página son **un solo fondo**: la barra usa `.mat-fondo`, fijo al viewport igual que `PanelFondo`, así la barra sticky muestra el mismo pedazo de fondo que tiene detrás (yeso de día, verde de noche), y la separa sólo una línea de `fondo-tinta` al 14%. (Con su propia luz calculada sobre 64px se leía como sombra interna.)
+`components/navbar/Navbar.tsx` — la barra superior, estilo Netflix: no hay sidebar. Logo pegado a la esquina izquierda, los tres destinos (`SectionNavbar`) con aire entre sí, luz + perfil + cerrar sesión a la derecha. Barra y página son **un solo fondo**: la barra usa `.mat-fondo`, fijo al viewport igual que `PanelFondo`, así la barra sticky muestra el mismo pedazo de fondo que tiene detrás (yeso de día, verde de noche), y la separa sólo una línea de `fondo-tinta` al 14%. (Con su propia luz calculada sobre 64px se leía como sombra interna.)
 
 Los destinos van **sin íconos**, sólo el nombre en la display (700, activo 800): son tres palabras que nadie reconoce antes por el dibujo, y el subrayado es el único adorno. La sección activa **no** se rellena — eso era la pastilla `rounded-hoja` del sistema viejo — se subraya: cada link lleva un `<svg>` con un único `path` en zigzag de esquinas redondeadas (uno distinto por destino) que se dibuja **como a mano** en 320ms: keyframes `trazo-*` en `app.css` con una parada por giro y curva propia por tramo (apoya, afloja en cada vuelta, levanta). Al salir no se desdibuja para atrás, se levanta por opacidad. Si se cambia un zigzag hay que volver a medir sus paradas. El color del link activo es `panel-ink` pleno; ojo con reusar `on-mango` para texto suelto sobre el panel — está pensado para texto sobre un relleno mango y en modo oscuro es casi negro, no lee sobre verde.
 
@@ -248,7 +251,7 @@ Los destinos van **sin íconos**, sólo el nombre en la display (700, activo 800
 
 ## Layouts
 
-- `layouts/auth/auth-simple-layout.tsx` — **la puerta.** Ya no es el único fondo sin material: usa `PanelFondo tono="puerta"` (`.mat-panel-liso`): verde en los dos modos, a diferencia del resto de la casa, que de día es yeso. Fibra, grano y la luz de la repisa, anclada arriba a la izquierda — ventana de día, se calienta a mango de noche, sin moverse de lugar. Antes había una bola de luz difusa que saltaba de esquina a esquina al cambiar de tema; se sacó por low-cost). El slogan arriba, como el cartel sobre la puerta. El formulario vive en una **hoja de cuaderno** (`.mat-hoja.hoja-rayado`) apoyada sobre ese panel —ya no en un arco: el arco simulaba una puerta, y esa metáfora de casa se dejó junto con los muebles.
+- `layouts/PuertaLayout.tsx` — **la puerta.** Ya no es el único fondo sin material: usa `PanelFondo tono="puerta"` (`.mat-panel-liso`): verde en los dos modos, a diferencia del resto de la casa, que de día es yeso. Fibra, grano y la luz de la repisa, anclada arriba a la izquierda — ventana de día, se calienta a mango de noche, sin moverse de lugar. Antes había una bola de luz difusa que saltaba de esquina a esquina al cambiar de tema; se sacó por low-cost). El slogan arriba, como el cartel sobre la puerta. El formulario vive en una **hoja de cuaderno** (`.mat-hoja.hoja-rayado`) apoyada sobre ese panel —ya no en un arco: el arco simulaba una puerta, y esa metáfora de casa se dejó junto con los muebles.
 
   El centrado usa `m-auto`, no `justify-center`: si el formulario es más alto que la pantalla, `justify-center` recorta el borde de arriba y no se puede llegar scrolleando.
 - `layouts/app/app-header-layout.tsx` — la barra superior toma el estilo desde `app.css`. Toda la app se apoya sobre `PanelFondo` (yeso de día, verde de noche); la selección de perfil (`pages/perfiles`) también, para que elegir perfil y entrar sean el mismo cuarto. Lo que va suelto sobre el fondo lleva `text-fondo-tinta`. Ojo con `mango-texto` suelto sobre el fondo: de noche, sobre verde, no llega a contraste de texto.
@@ -258,7 +261,7 @@ Los destinos van **sin íconos**, sólo el nombre en la display (700, activo 800
 # Pendiente
 
 - **La hoja partida** (símbolo) y **Carozo** (mascota) están sin rediseñar. Los conceptos están aprobados; los dibujos actuales se ven infantiles y de bajo costo. `HojaIcon.tsx` aísla la hoja a propósito: rediseñarla es cambiar un archivo, y todo lo que la usa (avatar, sello, logotipo) se actualiza solo.
-- `/dashboard`, `/finanzas` y `/hogar` tienen ruta y página real, pero Finanzas y Hogar son estados vacíos honestos —sin datos hardcodeados— porque todavía no existe el modelo de gastos/deudas/ahorros/tareas/notas detrás. El dashboard igual, salvo los avatares de perfiles, que ya son datos reales.
+- **Datos de muestra, a propósito.** `/dashboard`, `/finanzas` y `/hogar` muestran datos **inventados** de `resources/js/lib/muestra.ts` (convivientes Manu, Sofi, Tomi y Lu, tareas, gastos, deudas, vencimientos, ahorros, notas), para ver la web armada con todos los componentes. Las páginas ignoran las props que ya manda `web.php` (`gastos`, `deudas`, `notas`, `tareas`, `perfiles`). Al conectar datos reales: reemplazar cada import de `@/lib/muestra` por las props, volver a `EstadoVacio` cuando la lista esté vacía y borrar `muestra.ts`.
 - Falta el modelo de datos: gastos, deudas, ahorros, tareas, notas y sus vencimientos. `Perfil` (convivientes) ya existe.
 - `welcome.tsx` y la bienvenida de Laravel/Inertia en `/` se sacaron: la raíz ahora redirige a `/dashboard` o `/login` según haya sesión. De paso se fue el único error de TypeScript preexistente que traía esa página (`mix-blend-mode: 'plus-darker'`).
 - Se borraron, en distintos momentos, los archivos muertos del starter kit y del sistema de living retirado: los layouts de auth alternativos, el sidebar completo (`app-sidebar.tsx`, `nav-main` viejo, `ui/sidebar.tsx`, `use-mobile.tsx`), `app-logo-icon`, `appearance-dropdown`, `nav-footer`, `placeholder-pattern`, `app-shell` y `heading` (reemplazados por `PanelFondo` y `HojaBoard`), y en `app.css` los materiales de living (`mat-almohadon`, `mat-pana`, `mat-ceramica`, `mat-papel`, el mecanismo `.hunde`) con sus tokens (`--tex-nudo`, `--tex-pana`, `--ceramica-hi`, `--vidriado-torno`, `--radius-almohadon`, `--radius-arco`). Ninguno tenía referencias después del cambio que lo dejó obsoleto.

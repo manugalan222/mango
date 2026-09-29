@@ -1,37 +1,31 @@
-import { ManoIcon } from '@/components/mango/ManoIcon';
-import { COLORES_MIEMBRO, FONDOS, MiembroAvatar } from '@/components/mango/MiembroAvatar';
+import { SubrayadoLink } from '@/components/compartidos/SubrayadoLink';
+import { COLORES_MIEMBRO } from '@/components/mango/MiembroAvatar';
 import { PanelFondo } from '@/components/mango/PanelFondo';
-import { TextInput } from '@/components/mango/TextInput';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
+import { AgregarPerfilCard } from '@/components/perfiles/AgregarPerfilCard';
+import { PerfilCard } from '@/components/perfiles/PerfilCard';
+import { PerfilFormDialog } from '@/components/perfiles/PerfilFormDialog';
+import { PinDialog } from '@/components/perfiles/PinDialog';
 import { useEntrarPerfil } from '@/hooks/use-entrar-perfil';
 import { usePerfiles } from '@/hooks/use-perfiles';
-import { cn } from '@/lib/utils';
 import { type Perfil } from '@/types';
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
 
 /**
  * La puerta de la casa una vez que ya entraste: elegís quién sos, como en
- * Netflix. Sin sidebar todavía — hasta no elegir perfil no hay "adentro".
+ * Netflix. Sin barra todavía — hasta no elegir perfil no hay "adentro".
  */
 export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
     const [creando, setCreando] = useState(false);
-    const { data, setData, processing, errors, editando, editar, cancelar, guardar, eliminar } = usePerfiles({
-        alGuardar: () => setCreando(false),
-    });
+    const formulario = usePerfiles({ alGuardar: () => setCreando(false) });
     const entrada = useEntrarPerfil();
 
-    const abierto = creando || editando !== null;
     const casaCompleta = perfiles.length >= COLORES_MIEMBRO.length;
-    const coloresUsados = new Set(perfiles.filter((p) => p.id !== editando?.id).map((p) => p.color));
+    const coloresUsados = new Set(perfiles.filter((p) => p.id !== formulario.editando?.id).map((p) => p.color));
 
-    const cerrarDialog = () => {
+    const cerrarFormulario = () => {
         setCreando(false);
-        cancelar();
+        formulario.cancelar();
     };
 
     return (
@@ -46,208 +40,34 @@ export default function PerfilesIndex({ perfiles }: { perfiles: Perfil[] }) {
 
                 <ul className="flex flex-wrap items-start justify-center gap-6">
                     {perfiles.map((perfil) => (
-                        <li key={perfil.id} className="mat-hoja rounded-placa flex w-40 flex-col items-center gap-3 p-5">
-                            <button
-                                type="button"
-                                onClick={() => entrada.elegir(perfil)}
-                                disabled={entrada.processing}
-                                aria-label={`Entrar como ${perfil.nombre}${perfil.tiene_pin ? ', pide PIN' : ''}`}
-                                className="rounded-hoja focus-visible:ring-ring flex flex-col items-center gap-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden"
-                            >
-                                <MiembroAvatar nombre={perfil.nombre} color={perfil.color} className="size-20" />
-                                <span className="flex max-w-28 items-center gap-1 text-sm font-semibold">
-                                    <span className="truncate">{perfil.nombre}</span>
-                                    {perfil.tiene_pin && <ManoIcon nombre="candado" className="size-3.5 shrink-0" aria-hidden />}
-                                </span>
-                            </button>
-
-                            <div className="flex gap-1">
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    aria-label={`Editar a ${perfil.nombre}`}
-                                    onClick={() => editar(perfil)}
-                                >
-                                    <ManoIcon nombre="lapiz" className="size-4" />
-                                </Button>
-
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Button type="button" variant="ghost" size="icon" aria-label={`Eliminar a ${perfil.nombre}`}>
-                                            <ManoIcon nombre="papelera" className="size-4" />
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogTitle>¿Eliminar a {perfil.nombre}?</DialogTitle>
-                                        <DialogDescription>Se borra el perfil de la casa. No se puede deshacer.</DialogDescription>
-                                        <DialogFooter>
-                                            <DialogClose asChild>
-                                                <Button type="button" variant="pana">
-                                                    Cancelar
-                                                </Button>
-                                            </DialogClose>
-                                            <DialogClose asChild>
-                                                <Button type="button" variant="destructive" onClick={() => eliminar(perfil)}>
-                                                    Eliminar
-                                                </Button>
-                                            </DialogClose>
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
-                            </div>
-                        </li>
+                        <PerfilCard
+                            key={perfil.id}
+                            perfil={perfil}
+                            entrando={entrada.processing}
+                            onElegir={entrada.elegir}
+                            onEditar={formulario.editar}
+                            onEliminar={formulario.eliminar}
+                        />
                     ))}
 
-                    {!casaCompleta && (
-                        <li className="rounded-placa border-fondo-tinta/35 text-fondo-tinta/75 hover:border-fondo-tinta hover:text-fondo-tinta flex w-40 flex-col items-center gap-3 border-2 border-dashed p-5 transition-colors duration-150">
-                            <button
-                                type="button"
-                                onClick={() => setCreando(true)}
-                                aria-label="Crear un perfil nuevo"
-                                className="flex flex-col items-center gap-2"
-                            >
-                                <span className="rounded-hoja grid size-20 place-items-center border-2 border-dashed border-current">
-                                    <ManoIcon nombre="mas" className="size-8" />
-                                </span>
-                                <span className="text-sm font-semibold">Agregar perfil</span>
-                            </button>
-                        </li>
-                    )}
+                    {!casaCompleta && <AgregarPerfilCard onAgregar={() => setCreando(true)} />}
                 </ul>
 
                 {casaCompleta && <p className="text-fondo-tinta/80 text-sm">Ya hay un perfil para cada color de la casa.</p>}
 
-                <TextLink href={route('logout')} method="post" className="text-fondo-tinta decoration-fondo-tinta/35">
+                <SubrayadoLink href={route('logout')} method="post" as="button" className="text-fondo-tinta decoration-fondo-tinta/35">
                     Cerrar sesión
-                </TextLink>
+                </SubrayadoLink>
             </PanelFondo>
 
-            <Dialog open={abierto} onOpenChange={(open) => !open && cerrarDialog()}>
-                <DialogContent>
-                    <DialogTitle>{editando ? 'Editar perfil' : 'Crear perfil'}</DialogTitle>
-                    <DialogDescription>
-                        {editando ? `Cambiá los datos de ${editando.nombre}.` : 'Elegí un nombre, un color y, si querés, un PIN.'}
-                    </DialogDescription>
+            <PerfilFormDialog
+                abierto={creando || formulario.editando !== null}
+                onCerrar={cerrarFormulario}
+                formulario={formulario}
+                coloresUsados={coloresUsados}
+            />
 
-                    <form onSubmit={guardar} className="grid gap-4">
-                        <TextInput
-                            id="nombre"
-                            label="Nombre"
-                            value={data.nombre}
-                            onChange={(e) => setData('nombre', e.target.value)}
-                            error={errors.nombre}
-                            autoComplete="off"
-                            required
-                        />
-
-                        <TextInput
-                            id="pin"
-                            label={editando?.tiene_pin ? 'PIN nuevo' : 'PIN'}
-                            ayuda={
-                                editando?.tiene_pin
-                                    ? '4 a 6 números. Dejalo vacío para mantener el PIN actual.'
-                                    : '4 a 6 números. Dejalo vacío para no usar PIN.'
-                            }
-                            value={data.pin}
-                            onChange={(e) => setData('pin', e.target.value.replace(/\D/g, ''))}
-                            error={errors.pin}
-                            type="password"
-                            inputMode="numeric"
-                            maxLength={6}
-                            autoComplete="new-password"
-                            disabled={data.quitar_pin}
-                        />
-
-                        {editando?.tiene_pin && (
-                            <div className="flex items-center gap-2">
-                                <Checkbox
-                                    id="quitar_pin"
-                                    checked={data.quitar_pin}
-                                    onCheckedChange={(v) => setData((d) => ({ ...d, quitar_pin: v === true, pin: '' }))}
-                                />
-                                <Label htmlFor="quitar_pin" className="font-normal">
-                                    Quitar el PIN de {editando.nombre}
-                                </Label>
-                            </div>
-                        )}
-
-                        <div className="grid gap-1.5">
-                            <span className="text-sm font-medium">Color</span>
-
-                            <div role="group" aria-label="Color del perfil" className="flex gap-2">
-                                {COLORES_MIEMBRO.map((c) => {
-                                    const disponible = !coloresUsados.has(c);
-
-                                    return (
-                                        <button
-                                            key={c}
-                                            type="button"
-                                            disabled={!disponible}
-                                            aria-pressed={data.color === c}
-                                            aria-label={c}
-                                            onClick={() => setData('color', c)}
-                                            className={cn(
-                                                'rounded-hoja ring-offset-background size-11 ring-offset-2 transition-transform disabled:cursor-not-allowed disabled:opacity-30',
-                                                FONDOS[c],
-                                                data.color === c ? 'ring-ring scale-105 ring-2' : 'ring-border ring-1',
-                                            )}
-                                        />
-                                    );
-                                })}
-                            </div>
-
-                            {errors.color && (
-                                <p role="alert" className="text-mango-texto flex items-start gap-1.5 text-sm font-semibold">
-                                    <ManoIcon nombre="alerta" className="mt-px size-4" />
-                                    {errors.color}
-                                </p>
-                            )}
-                        </div>
-
-                        <DialogFooter>
-                            <Button type="button" variant="pana" onClick={cerrarDialog}>
-                                Cancelar
-                            </Button>
-                            <Button type="submit" disabled={processing}>
-                                {editando ? 'Guardar cambios' : 'Crear perfil'}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog open={entrada.pidiendo !== null} onOpenChange={(open) => !open && entrada.cerrar()}>
-                <DialogContent>
-                    <DialogTitle>Hola, {entrada.pidiendo?.nombre}</DialogTitle>
-                    <DialogDescription>Este perfil tiene PIN. Escribilo para entrar.</DialogDescription>
-
-                    <form onSubmit={entrada.entrar} className="grid gap-4">
-                        <TextInput
-                            id="pin-entrada"
-                            label="PIN"
-                            value={entrada.data.pin}
-                            onChange={(e) => entrada.setData('pin', e.target.value.replace(/\D/g, ''))}
-                            error={entrada.errors.pin}
-                            type="password"
-                            inputMode="numeric"
-                            maxLength={6}
-                            autoComplete="off"
-                            autoFocus
-                            required
-                        />
-
-                        <DialogFooter>
-                            <Button type="button" variant="pana" onClick={entrada.cerrar}>
-                                Cancelar
-                            </Button>
-                            <Button type="submit" disabled={entrada.processing || entrada.data.pin.length < 4}>
-                                Entrar
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
+            <PinDialog entrada={entrada} />
         </>
     );
 }

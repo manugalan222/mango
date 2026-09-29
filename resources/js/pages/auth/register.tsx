@@ -1,11 +1,10 @@
-import { ManoIcon } from '@/components/mango/ManoIcon';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-import { TextInput } from '@/components/mango/TextInput';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import AuthLayout from '@/layouts/auth-layout';
+import { SubrayadoLink } from '@/components/compartidos/SubrayadoLink';
+import { EnviarButton } from '@/components/formulario/EnviarButton';
+import { TextInput } from '@/components/formulario/TextInput';
+import { PuertaLayout } from '@/layouts/PuertaLayout';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -21,7 +20,7 @@ export default function Register() {
     };
 
     return (
-        <AuthLayout title="Armá tu casa" description="Una cuenta por casa. Los perfiles de cada uno vienen después.">
+        <PuertaLayout titulo="Armá tu casa" descripcion="Una cuenta por casa. Los perfiles de cada uno vienen después.">
             <Head title="Crear cuenta" />
 
             <form className="flex flex-col gap-5" onSubmit={enviar}>
@@ -78,15 +77,14 @@ export default function Register() {
                     disabled={processing}
                 />
 
-                <Button type="submit" className="w-full" disabled={processing}>
-                    {processing && <ManoIcon nombre="cargando" className="animate-spin" />}
-                    {processing ? 'Creando la casa' : 'Crear mi casa'}
-                </Button>
+                <EnviarButton procesando={processing} textoProcesando="Creando la casa" className="w-full">
+                    Crear mi casa
+                </EnviarButton>
             </form>
 
             <p className="text-tinta-2 text-center text-sm">
-                ¿Ya tenés cuenta? <TextLink href={route('login')}>Entrá</TextLink>
+                ¿Ya tenés cuenta? <SubrayadoLink href={route('login')}>Entrá</SubrayadoLink>
             </p>
-        </AuthLayout>
+        </PuertaLayout>
     );
 }

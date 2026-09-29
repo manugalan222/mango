@@ -1,8 +1,8 @@
-import AppLogo from '@/components/app-logo';
-import { ManoIcon } from '@/components/mango/ManoIcon';
-import { ModoToggle } from '@/components/mango/ModoToggle';
-import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
+import { BrandLogo } from '@/components/navbar/BrandLogo';
+import { DarkModeButton } from '@/components/navbar/DarkModeButton';
+import { LogoutButton } from '@/components/navbar/LogoutButton';
+import { SectionNavbar } from '@/components/navbar/SectionNavbar';
+import { UserMenu } from '@/components/navbar/UserMenu';
 import { Link } from '@inertiajs/react';
 
 /**
@@ -14,7 +14,7 @@ import { Link } from '@inertiajs/react';
  * verde de noche): barra y página son un solo fondo, separados sólo por una
  * línea de `fondo-tinta` al 14%. Vive en el layout persistente, así que no se vuelve a montar al navegar.
  */
-export function AppHeader() {
+export function Navbar() {
     return (
         <header className="mat-fondo border-fondo-tinta/14 sticky top-0 z-40 border-b">
             <div className="mx-auto flex h-16 max-w-7xl items-center px-4 md:px-6">
@@ -23,24 +23,16 @@ export function AppHeader() {
                     prefetch
                     className="focus-visible:ring-ring flex shrink-0 items-center rounded-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden"
                 >
-                    <AppLogo />
+                    <BrandLogo />
                 </Link>
 
-                <NavMain />
+                <SectionNavbar />
 
                 <div className="ml-auto flex shrink-0 items-center gap-2">
-                    <ModoToggle variante="fondo" />
-                    <NavUser />
+                    <DarkModeButton variante="fondo" />
+                    <UserMenu />
                     <span aria-hidden className="bg-fondo-tinta/15 mx-1 h-6 w-px" />
-                    <Link
-                        href={route('logout')}
-                        method="post"
-                        as="button"
-                        aria-label="Cerrar sesión"
-                        className="text-fondo-tinta/75 hover:bg-fondo-tinta/10 hover:text-fondo-tinta focus-visible:ring-ring focus-visible:ring-offset-fondo grid size-11 shrink-0 place-items-center rounded-lg transition-colors duration-150 ease-out focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden"
-                    >
-                        <ManoIcon nombre="salir" className="size-[18px]" />
-                    </Link>
+                    <LogoutButton />
                 </div>
             </div>
         </header>

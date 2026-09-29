@@ -4,7 +4,8 @@ import { ComponentProps } from 'react';
 
 type LinkProps = ComponentProps<typeof Link>;
 
-export default function TextLink({ className = '', children, ...props }: LinkProps) {
+/** El link de texto: mango y subrayado, que se afirma al pasar el mouse. */
+export function SubrayadoLink({ className = '', children, ...props }: LinkProps) {
     return (
         <Link
             className={cn(

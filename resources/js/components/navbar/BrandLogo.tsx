@@ -2,7 +2,7 @@ import { HojaIcon } from '@/components/mango/HojaIcon';
 import { type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 
-export default function AppLogo() {
+export function BrandLogo() {
     // El usuario ES la casa: `auth.user.name` es el nombre del hogar, no el de
     // la persona. La persona se elige después, en el selector de perfil.
     const { auth } = usePage<SharedData>().props;

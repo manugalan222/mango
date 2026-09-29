@@ -1,4 +1,4 @@
-import { ManoIcon } from '@/components/mango/ManoIcon';
+import { ErrorText } from '@/components/formulario/ErrorText';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -46,12 +46,7 @@ export function TextInput({
                 </p>
             )}
 
-            {error && (
-                <p id={idError} role="alert" className="text-mango-texto flex items-start gap-1.5 text-sm font-semibold">
-                    <ManoIcon nombre="alerta" className="mt-px size-4" />
-                    {error}
-                </p>
-            )}
+            <ErrorText id={idError} mensaje={error} />
         </div>
     );
 }

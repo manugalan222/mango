@@ -1,17 +1,17 @@
 import { MangoLogo } from '@/components/mango/MangoLogo';
-import { ModoToggle } from '@/components/mango/ModoToggle';
 import { PanelFondo } from '@/components/mango/PanelFondo';
+import { DarkModeButton } from '@/components/navbar/DarkModeButton';
 import { Link } from '@inertiajs/react';
 
-interface AuthLayoutProps {
+interface PuertaLayoutProps {
     children: React.ReactNode;
-    name?: string;
-    title?: string;
-    description?: string;
+    titulo: string;
+    descripcion: string;
 }
 
 /**
- * La puerta.
+ * La puerta: el layout de todas las páginas de auth (entrar, armar la casa,
+ * recuperar la contraseña, verificar el correo).
  *
  * `PanelFondo`: el mismo material del verde que la barra superior —fibra,
  * grano y la luz de la repisa, anclada arriba a la izquierda—. De día es
@@ -21,10 +21,10 @@ interface AuthLayoutProps {
  *
  * El slogan va arriba, como el cartel sobre la puerta.
  */
-export default function AuthSimpleLayout({ children, title, description }: AuthLayoutProps) {
+export function PuertaLayout({ children, titulo, descripcion }: PuertaLayoutProps) {
     return (
         <PanelFondo tono="puerta" className="relative flex min-h-svh flex-col px-5 py-10">
-            <ModoToggle variante="panel" className="absolute top-5 right-5" />
+            <DarkModeButton variante="panel" className="absolute top-5 right-5" />
 
             {/* `m-auto` en vez de `justify-center`: centra igual, y si el formulario
                 es más alto que la pantalla no recorta el borde de arriba. */}
@@ -43,8 +43,8 @@ export default function AuthSimpleLayout({ children, title, description }: AuthL
                                 <MangoLogo className="text-xl" />
                                 <span className="sr-only">Ir al inicio</span>
                             </Link>
-                            <h1 className="mt-2 text-3xl">{title}</h1>
-                            <p className="text-tinta-2 text-balance">{description}</p>
+                            <h1 className="mt-2 text-3xl">{titulo}</h1>
+                            <p className="text-tinta-2 text-balance">{descripcion}</p>
                         </div>
                         {children}
                     </div>

@@ -38,7 +38,7 @@ const TRAZOS: Record<string, { d: string; animacion: string }> = {
     },
 };
 
-export function NavMain() {
+export function SectionNavbar() {
     const page = usePage();
 
     return (
