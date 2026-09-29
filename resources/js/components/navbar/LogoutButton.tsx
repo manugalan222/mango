@@ -1,4 +1,4 @@
-import { ManoIcon } from '@/components/mango/ManoIcon';
+import { ManoIcon } from '@/components/marca/ManoIcon';
 import { Link } from '@inertiajs/react';
 
 /** Cerrar sesión de la casa, a la vista en la barra: sólo el ícono, con nombre accesible. */

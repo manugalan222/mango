@@ -1,4 +1,4 @@
-import { ManoIcon } from '@/components/mango/ManoIcon';
+import { ManoIcon } from '@/components/marca/ManoIcon';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { type Perfil } from '@/types';

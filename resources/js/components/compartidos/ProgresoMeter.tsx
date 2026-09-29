@@ -1,5 +1,5 @@
+import { formatearPesos } from '@/components/compartidos/PlataText';
 import { cn } from '@/lib/utils';
-import { formatearPesos } from './PlataText';
 
 /** ProgresoMeter de una sola serie. La etiqueta va siempre, nunca sólo el color. */
 export function ProgresoMeter({ parte, total, className }: { parte: number; total: number; className?: string }) {

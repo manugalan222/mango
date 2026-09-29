@@ -1,6 +1,6 @@
+import { COLORES_MIEMBRO } from '@/components/compartidos/MiembroAvatar';
 import { SubrayadoLink } from '@/components/compartidos/SubrayadoLink';
-import { COLORES_MIEMBRO } from '@/components/mango/MiembroAvatar';
-import { PanelFondo } from '@/components/mango/PanelFondo';
+import { PanelFondo } from '@/components/papel/PanelFondo';
 import { AgregarPerfilCard } from '@/components/perfiles/AgregarPerfilCard';
 import { PerfilCard } from '@/components/perfiles/PerfilCard';
 import { PerfilFormDialog } from '@/components/perfiles/PerfilFormDialog';

@@ -1,5 +1,5 @@
+import { type ColorMiembro } from '@/components/compartidos/MiembroAvatar';
 import { TextInput } from '@/components/formulario/TextInput';
-import { type ColorMiembro } from '@/components/mango/MiembroAvatar';
 import { ColorSelector } from '@/components/perfiles/ColorSelector';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';

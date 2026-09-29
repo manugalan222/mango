@@ -1,4 +1,4 @@
-import { ManoIcon } from '@/components/mango/ManoIcon';
+import { ManoIcon } from '@/components/marca/ManoIcon';
 import { cn } from '@/lib/utils';
 
 /**

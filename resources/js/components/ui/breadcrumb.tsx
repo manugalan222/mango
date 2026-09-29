@@ -1,5 +1,5 @@
 import { Slot } from '@radix-ui/react-slot';
-import { ManoIcon } from '@/components/mango/ManoIcon';
+import { ManoIcon } from '@/components/marca/ManoIcon';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';

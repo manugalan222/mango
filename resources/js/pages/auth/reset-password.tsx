@@ -28,15 +28,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
             <Head title="Contraseña nueva" />
 
             <form className="flex flex-col gap-5" onSubmit={enviar}>
-                <TextInput
-                    id="email"
-                    label="Correo de la casa"
-                    type="email"
-                    autoComplete="email"
-                    value={data.email}
-                    readOnly
-                    error={errors.email}
-                />
+                <TextInput id="email" label="Correo de la casa" type="email" autoComplete="email" value={data.email} readOnly error={errors.email} />
 
                 <TextInput
                     id="password"

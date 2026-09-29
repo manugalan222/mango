@@ -60,15 +60,6 @@
     --color-chart-4: var(--chart-4);
     --color-chart-5: var(--chart-5);
 
-    --color-sidebar: var(--sidebar-background);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-ring: var(--sidebar-ring);
-
     /* Nombres propios de MANGO. Todo lo de arriba es la capa semántica de shadcn;
        esto es la capa de marca, para cuando un componente necesita el material y no el rol. */
     --color-yeso: var(--yeso);
@@ -161,15 +152,6 @@
     --chart-4: var(--ciruela);
     --chart-5: var(--arcilla);
 
-    --sidebar-background: var(--panel);
-    --sidebar-foreground: var(--panel-ink);
-    --sidebar-primary: var(--mango-boton);
-    --sidebar-primary-foreground: var(--on-mango);
-    --sidebar-accent: oklch(0.3622 0.0385 158.19);
-    --sidebar-accent-foreground: var(--panel-ink);
-    --sidebar-border: oklch(0.4041 0.0435 156.25);
-    --sidebar-ring: var(--mango);
-
     /* sombras teñidas de espresso: una sombra gris sobre fondo cálido se ve sucia */
     --sombra: 0 1px 2px oklch(0.2502 0.0214 53.96 / 0.05), 0 8px 24px -12px oklch(0.2502 0.0214 53.96 / 0.18);
 
@@ -233,9 +215,6 @@
     --destructive-foreground: oklch(0.929 0.0216 76.53);
     --border: oklch(0.312 0.0224 55.42);
     --input: oklch(0.5287 0.0403 65.38);
-
-    --sidebar-accent: oklch(0.4304 0.0487 154.68);
-    --sidebar-border: oklch(0.4523 0.0472 156.2);
 
     --sombra: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.55);
     --fibra: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='130'><filter id='fd'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='130' height='130' filter='url(%23fd)' opacity='0.08'/></svg>");

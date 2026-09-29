@@ -1,5 +1,5 @@
+import { COLORES_MIEMBRO, FONDOS, type ColorMiembro } from '@/components/compartidos/MiembroAvatar';
 import { ErrorText } from '@/components/formulario/ErrorText';
-import { COLORES_MIEMBRO, FONDOS, type ColorMiembro } from '@/components/mango/MiembroAvatar';
 import { cn } from '@/lib/utils';
 
 interface ColorSelectorProps {

@@ -1,6 +1,6 @@
-import { EstadoBadge, type Estado } from './EstadoBadge';
-import { FilaItem } from './FilaItem';
-import { PlataText } from './PlataText';
+import { EstadoBadge, type Estado } from '@/components/compartidos/EstadoBadge';
+import { FilaItem } from '@/components/compartidos/FilaItem';
+import { PlataText } from '@/components/compartidos/PlataText';
 
 /**
  * Pago próximo. La fecha va en ancho fijo y tabular para que la columna se

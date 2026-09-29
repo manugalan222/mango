@@ -1,4 +1,4 @@
-import { HojaBoard } from '@/components/mango/HojaBoard';
+import { HojaBoard } from '@/components/papel/HojaBoard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { ReactNode, useState } from 'react';

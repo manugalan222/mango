@@ -1,6 +1,6 @@
+import { type ColorMiembro } from '@/components/compartidos/MiembroAvatar';
 import { cn } from '@/lib/utils';
 import { type CSSProperties, ReactNode } from 'react';
-import { type ColorMiembro } from './MiembroAvatar';
 
 const TONOS = {
     papel: '',

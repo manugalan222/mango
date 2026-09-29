@@ -1,4 +1,4 @@
-import { type ColorMiembro } from '@/components/mango/MiembroAvatar';
+import { type ColorMiembro } from '@/components/compartidos/MiembroAvatar';
 import { type Perfil } from '@/types';
 import { router, useForm } from '@inertiajs/react';
 import { FormEventHandler, useState } from 'react';

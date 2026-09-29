@@ -21,7 +21,8 @@ createInertiaApp({
         root.render(<App {...props} />);
     },
     progress: {
-        color: '#4B5563',
+        // La barrita de carga de Inertia, en mango y no en el gris del starter kit.
+        color: 'var(--mango)',
     },
 });
 

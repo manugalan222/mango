@@ -1,6 +1,6 @@
-import { type Categoria } from '@/components/mango/CategoriasChart';
-import { type Estado } from '@/components/mango/EstadoBadge';
-import { type ColorMiembro } from '@/components/mango/MiembroAvatar';
+import { type Estado } from '@/components/compartidos/EstadoBadge';
+import { type ColorMiembro } from '@/components/compartidos/MiembroAvatar';
+import { type Categoria } from '@/components/finanzas/CategoriasChart';
 
 /**
  * DATOS DE MUESTRA — inventados, para ver la web armada con todos sus

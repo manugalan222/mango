@@ -1,5 +1,5 @@
-import { ManoIcon } from '@/components/mango/ManoIcon';
-import { MiembroAvatar } from '@/components/mango/MiembroAvatar';
+import { MiembroAvatar } from '@/components/compartidos/MiembroAvatar';
+import { ManoIcon } from '@/components/marca/ManoIcon';
 import { EliminarPerfilDialog } from '@/components/perfiles/EliminarPerfilDialog';
 import { Button } from '@/components/ui/button';
 import { type Perfil } from '@/types';

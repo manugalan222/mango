@@ -1,4 +1,4 @@
-import { type ColorMiembro } from '@/components/mango/MiembroAvatar';
+import { type ColorMiembro } from '@/components/compartidos/MiembroAvatar';
 
 export interface Auth {
     user: User;
@@ -11,20 +11,13 @@ export interface BreadcrumbItem {
     href: string;
 }
 
-export interface NavGroup {
-    title: string;
-    items: NavItem[];
-}
-
 export interface NavItem {
     title: string;
     url: string;
-    isActive?: boolean;
 }
 
 export interface SharedData {
     name: string;
-    quote: { message: string; author: string };
     auth: Auth;
     [key: string]: unknown;
 }
@@ -34,8 +27,8 @@ export interface SharedData {
  *
  * Una cuenta por hogar, y adentro van los perfiles de cada conviviente, como
  * los perfiles de Netflix. `user.name` es el nombre de la casa y `user.email`
- * es el correo con el que entra la casa entera. Cuando exista la tabla de
- * perfiles, la persona pasa a ser `Perfil`, no `User`.
+ * es el correo con el que entra la casa entera. La persona es `Perfil`, y
+ * el que está usando la app viaja como `auth.perfil`.
  */
 export type Casa = User;
 

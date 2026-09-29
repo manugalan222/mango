@@ -1,6 +1,6 @@
 'use client';
 
-import { ManoIcon } from '@/components/mango/ManoIcon';
+import { ManoIcon } from '@/components/marca/ManoIcon';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import * as React from 'react';
 

@@ -16,7 +16,7 @@ npm run build         # compilar assets
 npx tsc --noEmit      # chequeo de tipos
 ```
 
-Íconos: **`ManoIcon`** (`components/mango/ManoIcon.tsx`), dibujados a mano con la tinta del contorno (2.3, puntas redondas, trazo irregular), en grilla 24×24: `<ManoIcon nombre="recibo" className="size-4" />`. Reemplazaron a lucide en **toda** la app por decisión de Manu —la geometría de regla chocaba con las hojas y el subrayado a mano—. Un ícono nuevo se dibuja ahí y se suma al registro `TRAZOS`; no se importa de ninguna librería. `lucide-react` sigue instalado sólo porque `components.json` lo declara: **todo componente que agregue `npx shadcn add` trae imports de lucide que hay que cambiar por `ManoIcon`.**
+Íconos: **`ManoIcon`** (`components/marca/ManoIcon.tsx`), dibujados a mano con la tinta del contorno (2.3, puntas redondas, trazo irregular), en grilla 24×24: `<ManoIcon nombre="recibo" className="size-4" />`. Reemplazaron a lucide en **toda** la app por decisión de Manu —la geometría de regla chocaba con las hojas y el subrayado a mano—. Un ícono nuevo se dibuja ahí y se suma al registro `TRAZOS`; no se importa de ninguna librería. `lucide-react` sigue instalado sólo porque `components.json` lo declara: **todo componente que agregue `npx shadcn add` trae imports de lucide que hay que cambiar por `ManoIcon`.**
 
 ## Rutas
 
@@ -29,19 +29,49 @@ Cada recurso nuevo repite el patrón de `perfiles`: `Enum` (si el campo lo pide)
 
 **Ojo con `Route::apiResource`/`Route::resource` y nombres en español:** el pluralizador de Laravel no sabe castellano — de `perfiles` saca el parámetro `{perfile}`, no `{perfil}`, y eso rompe el binding con la variable del controller. Agregar siempre `->parameters(['<recurso>' => '<singular>'])`. Le va a pasar a `tareas`, `compras`, `gastos` y `casa` cuando se arme esas rutas.
 
-## Convención de nombres
+## Estructura del frontend
 
-**Archivos de componentes propios: `NombreTipo.tsx`** — nombre en mayúscula seguido del tipo de componente. `TextInput`, `EstadoBadge`, `TareaRow`, `MiembroAvatar`, `BentoGrid`, `CategoriasChart`. Un componente por archivo.
+Todo en `resources/js/`. **Una carpeta por sección de la app** para lo que sólo usa esa sección, y carpetas por rol para lo que comparten varias:
 
-**Hooks en minúscula:** `use-appearance.tsx`, `use-initials.tsx`.
+```
+app.tsx                 entrada de Inertia
+pages/                  una página por `Inertia::render(...)` (contrato con PHP)
+layouts/
+  CasaLayout.tsx        adentro de la casa: Navbar + PanelFondo + migas
+  AjustesLayout.tsx     la hoja de Ajustes con su índice, anidado en CasaLayout
+  PuertaLayout.tsx      auth: panel verde, slogan y la hoja del formulario
+components/
+  ui/                   shadcn (lo genera el CLI)
+  navbar/               la barra superior — en inglés, a pedido de Manu
+  marca/                ManoIcon, HojaIcon, MangoLogo
+  papel/                las superficies del cuaderno: PanelFondo, HojaBoard, SeccionTabs, PanelCard, AnotadorCard
+  compartidos/          piezas chicas que usa cualquier sección: PlataText, MiembroAvatar, EstadoBadge, FilasList…
+  formulario/           TextInput, ErrorText, EnviarButton, AvisoBanner, GuardadoText
+  perfiles/             "¿Quién anda por casa?"
+  dashboard/            BentoGrid, RachaMeter
+  finanzas/             filas, tarjetas y pestañas de Finanzas (también las usa el dashboard)
+  hogar/                filas, tarjetas y pestañas de Hogar
+  ajustes/              secciones de Ajustes
+hooks/                  use-*.tsx
+lib/                    utils y muestra.ts (datos inventados, ver Pendiente)
+types/index.ts
+```
 
-Tres excepciones que **no** se renombran:
+**Dónde va un componente nuevo:** si lo usa una sola sección, en la carpeta de esa sección. Si es de una sección pero otra lo reusa (`DeudasList` en el dashboard), se queda en la de su dominio y el otro lo importa de ahí. Sólo pasa a `compartidos/` cuando no es de ninguna sección en particular. `papel/` es para materiales (superficies), no para contenido.
+
+**Las pestañas son componentes:** cada pestaña de una `SeccionTabs` es un `<Nombre>Tab` en la carpeta de su sección (`GastosTab`, `TareasTab`) que **recibe los datos por props**. La página sólo arma el array de `pestanas` y le pasa los datos: al conectar datos reales se toca la página, no la pestaña.
+
+**Archivos de componentes propios: `NombreTipo.tsx`**, un componente por archivo, **nombre en castellano y tipo como sufijo**: `TareaRow`, `EstadoBadge`, `PlataText`, `MiembroAvatar`, `PerfilFormDialog`, `EnviarButton`, `GastosTab`. Los tipos que se usan: `Row` (fila), `List`, `Card`, `Board`, `Tab`, `Dialog`, `Button`, `Input`, `Text`, `Badge`, `Banner`, `Selector`, `Meter`, `Chart`, `Icon`, `Logo`, `Header`, `Breadcrumb`, `Link`, `Layout`. Export con nombre (`export function TareaRow`), nunca `default` — salvo las páginas, que Inertia necesita por `default`.
+
+**Hooks en minúscula:** `use-appearance.tsx`, `use-perfiles.tsx`.
+
+Tres excepciones:
 
 1. `components/ui/**` — los genera el CLI de shadcn por nombre en minúscula. Renombrarlos rompe `npx shadcn add`.
 2. `pages/**` — Inertia los resuelve por la cadena que manda el servidor (`Inertia::render('dashboard')`). El nombre del archivo es parte del contrato con PHP.
+3. `components/navbar/**` — en inglés (`Navbar`, `SectionNavbar`, `DarkModeButton`, `BrandLogo`, `UserMenu`, `UserInfo`, `LogoutButton`), por decisión de Manu. Mismo patrón `NombreTipo`, otro idioma.
 
-**Layout persistente:** una página de app **no** se envuelve en `<AppLayout>` dentro de su JSX; lo declara aparte, `Pagina.layout = (page: ReactNode) => <AppLayout>{page}</AppLayout>;` (con `breadcrumbs` si hace falta). Así Inertia mantiene montada la barra al navegar y sólo cambia el contenido. Envuelta adentro, la barra se desmonta en cada click y el subrayado nace ya dibujado, sin animar.
-3. Los archivos que vienen del starter kit y todavía no se limpiaron (`input-error.tsx`, `delete-user.tsx`…). La convención es para lo que escribimos nosotros; renombrar lo ajeno sólo agrega ruido al diff.
+**Layout persistente:** una página de app **no** se envuelve en `<CasaLayout>` dentro de su JSX; lo declara aparte, `Pagina.layout = (page: ReactNode) => <CasaLayout>{page}</CasaLayout>;` (con `migas` si hace falta; las de Ajustes anidan `<AjustesLayout>` adentro). Así Inertia mantiene montada la barra al navegar y sólo cambia el contenido. Envuelta adentro, la barra se desmonta en cada click y el subrayado nace ya dibujado, sin animar. El margen de la página lo pone `CasaLayout`: la página no se agrega `p-4`/`md:p-6` propio.
 
 ---
 
@@ -200,38 +230,51 @@ El array `attributes` de `lang/es/validation.php` nombra los campos **con artíc
 - La diversión vive del lado de las tareas. **El estilo toca el marco, nunca el número.**
 - Un acento por pantalla. Un botón primario por pantalla.
 - El latón y el ámbar sólo aparecen cuando la casa cumplió algo. Si aparecen siempre, dejan de valer.
-- Todo monto pasa por `<Plata>`: `tabular-nums` y una sola regla de tono.
+- Todo monto pasa por `<PlataText>`: `tabular-nums` y una sola regla de tono.
 - Nada de juegos de palabras con la fruta: ni "dulce", ni "jugoso", ni "fruto de tu esfuerzo". Es la trampa obvia y agota la marca en dos semanas.
 
 ---
 
 # Componentes
 
-## Propios — `resources/js/components/mango/`
+## Propios — por carpeta
 
-| Archivo | Para qué |
-| --- | --- |
-| `HojaIcon.tsx` | el símbolo de marca |
-| `MangoLogo.tsx` | el logotipo dibujado |
-| `PlataText.tsx` | todo monto, en es-AR y tabular (+ `formatearPesos`) |
-| `EstadoBadge.tsx` | estado de un pago o una tarea (lino) |
-| `SelloBadge.tsx` | logro, en forma de hoja |
-| `MiembroAvatar.tsx` | identidad de cada conviviente (+ `COLORES_MIEMBRO`) |
-| `BentoGrid.tsx` | muro de galería de 6 columnas |
-| `PanelCard.tsx` | hoja chica del mismo papel que `HojaBoard` (rayada por defecto, título escrito arriba), anchos 2/3/4. El muro del dashboard |
-| `AnotadorCard.tsx` | anotador suelto sobre una `HojaBoard`: `sujecion` espiral/cinta, `tono` papel o pastel de nota adhesiva, `giro` en grados (+ `TONO_DE_MIEMBRO`) |
-| `HojaBoard.tsx` | la hoja grande de una página, rayada y fija, con el título adentro. Finanzas y Hogar (vía `SeccionTabs`) y ajustes |
-| `EstadoVacio.tsx` | ícono + qué falta + acción, para cuando todavía no hay datos reales |
-| `SeccionTabs.tsx` | la hoja de una sección con sus marcadores: sólo las subsecciones de lo que eligió la barra superior (Finanzas → Gastos, Deudas, Ahorros), nunca las de otra sección. Sincroniza `?tab=` |
-| `PanelFondo.tsx` | el fondo texturado. Por defecto (`casa`, `.mat-fondo`) sigue al modo: toda la app y la selección de perfil. `tono="puerta"` (`.mat-panel-liso`) es verde siempre: sólo auth |
-| `FilasList.tsx` | lista de filas |
-| `FilaItem.tsx` | fila con punteada |
-| `TareaRow.tsx` | quehacer marcable |
-| `DeudaRow.tsx` | deuda entre convivientes |
-| `PagoRow.tsx` | vencimiento próximo |
-| `RachaMeter.tsx` | semanas cerradas |
-| `ProgresoMeter.tsx` | medidor de una serie |
-| `CategoriasChart.tsx` | barras con etiqueta directa |
+| Carpeta | Archivo | Para qué |
+| --- | --- | --- |
+| `marca/` | `ManoIcon.tsx` | los íconos dibujados a mano (registro `TRAZOS`) |
+| | `HojaIcon.tsx` | el símbolo de marca |
+| | `MangoLogo.tsx` | el logotipo dibujado |
+| `papel/` | `PanelFondo.tsx` | el fondo texturado. Por defecto (`casa`, `.mat-fondo`) sigue al modo: toda la app y la selección de perfil. `tono="puerta"` (`.mat-panel-liso`) es verde siempre: sólo auth |
+| | `HojaBoard.tsx` | la hoja grande de una página, rayada y fija, con el título adentro. Finanzas y Hogar (vía `SeccionTabs`) y Ajustes |
+| | `SeccionTabs.tsx` | la hoja de una sección con sus marcadores: sólo las subsecciones de lo que eligió la barra superior (Finanzas → Gastos, Deudas, Ahorros), nunca las de otra sección. Sincroniza `?tab=` |
+| | `PanelCard.tsx` | hoja chica del mismo papel que `HojaBoard` (rayada por defecto, título escrito arriba), anchos 2/3/4. El muro del dashboard |
+| | `AnotadorCard.tsx` | anotador suelto sobre una `HojaBoard`: `sujecion` espiral/cinta, `tono` papel o pastel de nota adhesiva, `giro` en grados (+ `TONO_DE_MIEMBRO`) |
+| `compartidos/` | `PlataText.tsx` | todo monto, en es-AR y tabular (+ `formatearPesos`) |
+| | `MiembroAvatar.tsx` | identidad de cada conviviente (+ `COLORES_MIEMBRO`, `FONDOS`) |
+| | `EstadoBadge.tsx` | estado de un pago o una tarea (lino) |
+| | `SelloBadge.tsx` | logro, en forma de hoja |
+| | `ProgresoMeter.tsx` | medidor de una serie |
+| | `FilasList.tsx` / `FilaItem.tsx` | lista de filas / fila con punteada |
+| | `EstadoVacio.tsx` | ícono + qué falta + acción, para cuando todavía no hay datos reales |
+| | `SubrayadoLink.tsx` | el link de texto: mango y subrayado |
+| | `MigasBreadcrumb.tsx` | las migas de pan, sueltas sobre el fondo |
+| `formulario/` | `TextInput.tsx` | label + input + ayuda + error, todo cableado |
+| | `ErrorText.tsx` | el error de un campo, con ícono y `role="alert"` |
+| | `EnviarButton.tsx` | el botón de enviar, con su estado de carga |
+| | `AvisoBanner.tsx` | aviso verde de que algo salió bien (`role="status"`) |
+| | `GuardadoText.tsx` | el "Guardado" que aparece y se va solo |
+| `perfiles/` | `PerfilCard`, `AgregarPerfilCard`, `PerfilFormDialog`, `ColorSelector`, `PinDialog`, `EliminarPerfilDialog` | "¿Quién anda por casa?" |
+| `dashboard/` | `BentoGrid.tsx` | muro de galería de 6 columnas |
+| | `RachaMeter.tsx` | semanas cerradas |
+| `finanzas/` | `GastosTab`, `DeudasTab`, `AhorrosTab` | las tres pestañas |
+| | `GastoRow`, `DeudaRow`, `PagoRow` | movimiento, deuda entre convivientes, vencimiento próximo |
+| | `DeudasList.tsx` | quién le debe a quién (Finanzas y dashboard) |
+| | `AhorroCard.tsx` | una meta de ahorro, con sello al pasar el 90% |
+| | `CategoriasChart.tsx` | barras con etiqueta directa |
+| `hogar/` | `TareasTab`, `NotasTab` | las dos pestañas |
+| | `TareaRow.tsx` | quehacer marcable |
+| | `NotaCard.tsx` | nota adhesiva del color de quien la escribió |
+| `ajustes/` | `SeccionHeader`, `AparienciaSelector`, `EliminarCasaDialog` | encabezado de sección, claro/oscuro/sistema, borrar la casa |
 
 El bento usa **sólo tres anchos** (2, 3 y 4 de 6). Limitar los anchos es lo que hace que un muro desordenado se lea ordenado.
 
@@ -239,7 +282,7 @@ Las barras llevan **etiqueta directa** en cada una: nadie tiene que cruzar una l
 
 ## De shadcn — modificados
 
-`ui/button.tsx` (variantes `almohadon`, `pana`, `ceramica` sobre `.mat-pegatina`; las claves de variante no cambiaron aunque el material sí, para no tener que tocar cada call site), `ui/input.tsx` (hundido), `ui/checkbox.tsx` (forma del sistema), `ui/label.tsx`, `input-error.tsx`, `ui/tabs.tsx` (restyleado para `SeccionTabs`, agregado con el CLI de shadcn).
+`ui/button.tsx` (variantes `almohadon`, `pana`, `ceramica` sobre `.mat-pegatina`; las claves de variante no cambiaron aunque el material sí, para no tener que tocar cada call site), `ui/input.tsx` (hundido), `ui/checkbox.tsx` (forma del sistema), `ui/label.tsx`, `ui/avatar.tsx` (el fallback de iniciales en `mango-boton`/`on-mango`), `ui/tabs.tsx` (restyleado para `SeccionTabs`, agregado con el CLI de shadcn).
 
 ## Navegación
 
@@ -247,21 +290,22 @@ Las barras llevan **etiqueta directa** en cada una: nadie tiene que cruzar una l
 
 Los destinos van **sin íconos**, sólo el nombre en la display (700, activo 800): son tres palabras que nadie reconoce antes por el dibujo, y el subrayado es el único adorno. La sección activa **no** se rellena — eso era la pastilla `rounded-hoja` del sistema viejo — se subraya: cada link lleva un `<svg>` con un único `path` en zigzag de esquinas redondeadas (uno distinto por destino) que se dibuja **como a mano** en 320ms: keyframes `trazo-*` en `app.css` con una parada por giro y curva propia por tramo (apoya, afloja en cada vuelta, levanta). Al salir no se desdibuja para atrás, se levanta por opacidad. Si se cambia un zigzag hay que volver a medir sus paradas. El color del link activo es `panel-ink` pleno; ojo con reusar `on-mango` para texto suelto sobre el panel — está pensado para texto sobre un relleno mango y en modo oscuro es casi negro, no lee sobre verde.
 
-`layouts/app/app-header-layout.tsx` es el único layout de app; no hay variante de sidebar.
+`layouts/CasaLayout.tsx` es el único layout de app; no hay variante de sidebar.
 
 ## Layouts
 
 - `layouts/PuertaLayout.tsx` — **la puerta.** Ya no es el único fondo sin material: usa `PanelFondo tono="puerta"` (`.mat-panel-liso`): verde en los dos modos, a diferencia del resto de la casa, que de día es yeso. Fibra, grano y la luz de la repisa, anclada arriba a la izquierda — ventana de día, se calienta a mango de noche, sin moverse de lugar. Antes había una bola de luz difusa que saltaba de esquina a esquina al cambiar de tema; se sacó por low-cost). El slogan arriba, como el cartel sobre la puerta. El formulario vive en una **hoja de cuaderno** (`.mat-hoja.hoja-rayado`) apoyada sobre ese panel —ya no en un arco: el arco simulaba una puerta, y esa metáfora de casa se dejó junto con los muebles.
 
   El centrado usa `m-auto`, no `justify-center`: si el formulario es más alto que la pantalla, `justify-center` recorta el borde de arriba y no se puede llegar scrolleando.
-- `layouts/app/app-header-layout.tsx` — la barra superior toma el estilo desde `app.css`. Toda la app se apoya sobre `PanelFondo` (yeso de día, verde de noche); la selección de perfil (`pages/perfiles`) también, para que elegir perfil y entrar sean el mismo cuarto. Lo que va suelto sobre el fondo lleva `text-fondo-tinta`. Ojo con `mango-texto` suelto sobre el fondo: de noche, sobre verde, no llega a contraste de texto.
+- `layouts/CasaLayout.tsx` — la barra superior toma el estilo desde `app.css`. Toda la app se apoya sobre `PanelFondo` (yeso de día, verde de noche); la selección de perfil (`pages/perfiles`) también, para que elegir perfil y entrar sean el mismo cuarto. Lo que va suelto sobre el fondo lleva `text-fondo-tinta`. Ojo con `mango-texto` suelto sobre el fondo: de noche, sobre verde, no llega a contraste de texto.
 
 ---
 
 # Pendiente
 
 - **La hoja partida** (símbolo) y **Carozo** (mascota) están sin rediseñar. Los conceptos están aprobados; los dibujos actuales se ven infantiles y de bajo costo. `HojaIcon.tsx` aísla la hoja a propósito: rediseñarla es cambiar un archivo, y todo lo que la usa (avatar, sello, logotipo) se actualiza solo.
-- **Datos de muestra, a propósito.** `/dashboard`, `/finanzas` y `/hogar` muestran datos **inventados** de `resources/js/lib/muestra.ts` (convivientes Manu, Sofi, Tomi y Lu, tareas, gastos, deudas, vencimientos, ahorros, notas), para ver la web armada con todos los componentes. Las páginas ignoran las props que ya manda `web.php` (`gastos`, `deudas`, `notas`, `tareas`, `perfiles`). Al conectar datos reales: reemplazar cada import de `@/lib/muestra` por las props, volver a `EstadoVacio` cuando la lista esté vacía y borrar `muestra.ts`.
+- **Datos de muestra, a propósito.** `/dashboard`, `/finanzas` y `/hogar` muestran datos **inventados** de `resources/js/lib/muestra.ts` (convivientes Manu, Sofi, Tomi y Lu, tareas, gastos, deudas, vencimientos, ahorros, notas), para ver la web armada con todos los componentes. Las páginas ignoran las props que ya manda `web.php` (`gastos`, `deudas`, `notas`, `tareas`, `perfiles`). Los imports de `@/lib/muestra` están en las páginas (los datos) y en las `*Tab`/`*Row`/`DeudasList` (los tipos `*Muestra` y `CONVIVIENTES` para resolver quién). Al conectar datos reales: pasar las props del servidor desde la página, cambiar esos tipos por los del modelo, volver a `EstadoVacio` cuando la lista esté vacía y borrar `muestra.ts`.
+- **Dependencias sin uso en `package.json`**: `@radix-ui/react-collapsible`, `-navigation-menu`, `-select`, `-separator`, `-toggle`, `-toggle-group` y `-tooltip` quedaron sin ningún import al borrar los `ui/` muertos. Sacarlas es un `npm uninstall` (toca el lockfile); si alguna vuelve a hacer falta, `npx shadcn add` la reinstala.
 - Falta el modelo de datos: gastos, deudas, ahorros, tareas, notas y sus vencimientos. `Perfil` (convivientes) ya existe.
 - `welcome.tsx` y la bienvenida de Laravel/Inertia en `/` se sacaron: la raíz ahora redirige a `/dashboard` o `/login` según haya sesión. De paso se fue el único error de TypeScript preexistente que traía esa página (`mix-blend-mode: 'plus-darker'`).
-- Se borraron, en distintos momentos, los archivos muertos del starter kit y del sistema de living retirado: los layouts de auth alternativos, el sidebar completo (`app-sidebar.tsx`, `nav-main` viejo, `ui/sidebar.tsx`, `use-mobile.tsx`), `app-logo-icon`, `appearance-dropdown`, `nav-footer`, `placeholder-pattern`, `app-shell` y `heading` (reemplazados por `PanelFondo` y `HojaBoard`), y en `app.css` los materiales de living (`mat-almohadon`, `mat-pana`, `mat-ceramica`, `mat-papel`, el mecanismo `.hunde`) con sus tokens (`--tex-nudo`, `--tex-pana`, `--ceramica-hi`, `--vidriado-torno`, `--radius-almohadon`, `--radius-arco`). Ninguno tenía referencias después del cambio que lo dejó obsoleto.
+- Se borraron, en distintos momentos, los archivos muertos del starter kit y del sistema de living retirado: los layouts de auth alternativos, el sidebar completo (`app-sidebar.tsx`, `nav-main` viejo, `ui/sidebar.tsx`, `use-mobile.tsx`), `app-logo-icon`, `appearance-dropdown`, `nav-footer`, `placeholder-pattern`, `app-shell` y `heading` (reemplazados por `PanelFondo` y `HojaBoard`); en la reorganización por carpetas, `app-content`, `app-layout`, `app-header-layout`, `auth-layout`, `auth-simple-layout`, `settings/layout`, `input-error`, `heading-small`, `appearance-tabs`, `delete-user`, `user-menu-content` (fundidos en los layouts y componentes nuevos), los `ui/` sin uso (`alert`, `badge`, `card`, `collapsible`, `separator`, `skeleton`, `toggle`, `toggle-group`, `tooltip`), los tokens `--sidebar-*` de `app.css` y la `quote` de `Inspiring` que compartía `HandleInertiaRequests` sin que nadie la mostrara, y en `app.css` los materiales de living (`mat-almohadon`, `mat-pana`, `mat-ceramica`, `mat-papel`, el mecanismo `.hunde`) con sus tokens (`--tex-nudo`, `--tex-pana`, `--ceramica-hi`, `--vidriado-torno`, `--radius-almohadon`, `--radius-arco`). Ninguno tenía referencias después del cambio que lo dejó obsoleto.

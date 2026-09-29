@@ -1,16 +1,16 @@
-import { BentoGrid } from '@/components/mango/BentoGrid';
-import { CategoriasChart } from '@/components/mango/CategoriasChart';
-import { DeudaRow } from '@/components/mango/DeudaRow';
-import { FilaItem } from '@/components/mango/FilaItem';
-import { FilasList } from '@/components/mango/FilasList';
-import { MiembroAvatar } from '@/components/mango/MiembroAvatar';
-import { PagoRow } from '@/components/mango/PagoRow';
-import { PanelCard } from '@/components/mango/PanelCard';
-import { PlataText } from '@/components/mango/PlataText';
-import { ProgresoMeter } from '@/components/mango/ProgresoMeter';
-import { RachaMeter } from '@/components/mango/RachaMeter';
-import { TareaRow } from '@/components/mango/TareaRow';
-import AppLayout from '@/layouts/app-layout';
+import { FilaItem } from '@/components/compartidos/FilaItem';
+import { FilasList } from '@/components/compartidos/FilasList';
+import { MiembroAvatar } from '@/components/compartidos/MiembroAvatar';
+import { PlataText } from '@/components/compartidos/PlataText';
+import { ProgresoMeter } from '@/components/compartidos/ProgresoMeter';
+import { BentoGrid } from '@/components/dashboard/BentoGrid';
+import { RachaMeter } from '@/components/dashboard/RachaMeter';
+import { CategoriasChart } from '@/components/finanzas/CategoriasChart';
+import { DeudasList } from '@/components/finanzas/DeudasList';
+import { PagoRow } from '@/components/finanzas/PagoRow';
+import { TareaRow } from '@/components/hogar/TareaRow';
+import { PanelCard } from '@/components/papel/PanelCard';
+import { CasaLayout } from '@/layouts/CasaLayout';
 import { AHORROS, BALANCE_MES, CONVIVIENTES, DEUDAS, GASTOS_POR_CATEGORIA, RACHA, TAREAS, VENCIMIENTOS } from '@/lib/muestra';
 import { Head } from '@inertiajs/react';
 import { type ReactNode, useState } from 'react';
@@ -32,7 +32,7 @@ export default function Dashboard() {
     return (
         <>
             <Head title="Inicio" />
-            <div className="flex flex-1 flex-col gap-5 p-4 pt-6 md:p-6 md:pt-8">
+            <div className="flex flex-1 flex-col gap-5">
                 {/* Suelto sobre el fondo: `fondo-tinta` (tinta de día, panel-ink de noche). */}
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
@@ -92,17 +92,7 @@ export default function Dashboard() {
                     </PanelCard>
 
                     <PanelCard titulo="Cuentas entre convivientes" ancho={3} textura="liso">
-                        <ul className="flex flex-col gap-2">
-                            {DEUDAS.map((d) => (
-                                <DeudaRow
-                                    key={d.id}
-                                    texto={d.texto}
-                                    monto={d.monto}
-                                    quien={CONVIVIENTES[d.quien].nombre}
-                                    color={CONVIVIENTES[d.quien].color}
-                                />
-                            ))}
-                        </ul>
+                        <DeudasList deudas={DEUDAS} />
                     </PanelCard>
 
                     <PanelCard titulo="Ahorro de la casa" ancho={3} textura="liso">
@@ -120,4 +110,4 @@ export default function Dashboard() {
     );
 }
 
-Dashboard.layout = (page: ReactNode) => <AppLayout>{page}</AppLayout>;
+Dashboard.layout = (page: ReactNode) => <CasaLayout>{page}</CasaLayout>;

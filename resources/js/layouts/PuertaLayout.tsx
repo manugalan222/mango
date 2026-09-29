@@ -1,6 +1,6 @@
-import { MangoLogo } from '@/components/mango/MangoLogo';
-import { PanelFondo } from '@/components/mango/PanelFondo';
+import { MangoLogo } from '@/components/marca/MangoLogo';
 import { DarkModeButton } from '@/components/navbar/DarkModeButton';
+import { PanelFondo } from '@/components/papel/PanelFondo';
 import { Link } from '@inertiajs/react';
 
 interface PuertaLayoutProps {

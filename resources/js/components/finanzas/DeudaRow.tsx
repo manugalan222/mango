@@ -1,5 +1,5 @@
-import { MiembroAvatar, type ColorMiembro } from './MiembroAvatar';
-import { PlataText } from './PlataText';
+import { MiembroAvatar, type ColorMiembro } from '@/components/compartidos/MiembroAvatar';
+import { PlataText } from '@/components/compartidos/PlataText';
 
 /**
  * Deuda entre convivientes. Fondo mango suave porque es lo único de la pantalla

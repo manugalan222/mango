@@ -1,4 +1,4 @@
-import { formatearPesos } from './PlataText';
+import { formatearPesos } from '@/components/compartidos/PlataText';
 
 export type Categoria = { nombre: string; monto: number; color: string };
 

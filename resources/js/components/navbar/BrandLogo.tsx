@@ -1,4 +1,4 @@
-import { HojaIcon } from '@/components/mango/HojaIcon';
+import { HojaIcon } from '@/components/marca/HojaIcon';
 import { type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 

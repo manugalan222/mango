@@ -2,14 +2,15 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { type BreadcrumbItem as BreadcrumbItemType } from '@/types';
 import { Fragment } from 'react';
 
-export function Breadcrumbs({ breadcrumbs }: { breadcrumbs: BreadcrumbItemType[] }) {
+/** Las migas de pan, sueltas sobre el fondo: por eso van en `fondo-tinta`. */
+export function MigasBreadcrumb({ migas }: { migas: BreadcrumbItemType[] }) {
     return (
         <>
-            {breadcrumbs.length > 0 && (
+            {migas.length > 0 && (
                 <Breadcrumb>
                     <BreadcrumbList className="text-fondo-tinta/75">
-                        {breadcrumbs.map((item, index) => {
-                            const isLast = index === breadcrumbs.length - 1;
+                        {migas.map((item, index) => {
+                            const isLast = index === migas.length - 1;
                             return (
                                 <Fragment key={index}>
                                     <BreadcrumbItem>

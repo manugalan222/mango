@@ -1,6 +1,6 @@
-import { ManoIcon } from '@/components/mango/ManoIcon';
+import { MiembroAvatar, type ColorMiembro } from '@/components/compartidos/MiembroAvatar';
+import { ManoIcon } from '@/components/marca/ManoIcon';
 import { cn } from '@/lib/utils';
-import { MiembroAvatar, type ColorMiembro } from './MiembroAvatar';
 
 /**
  * Fila de tarea.

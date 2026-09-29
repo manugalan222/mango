@@ -1,4 +1,4 @@
-import { ManoIcon } from '@/components/mango/ManoIcon';
+import { ManoIcon } from '@/components/marca/ManoIcon';
 
 /** El lugar vacío al final de la fila, punteado: abre el alta de un perfil nuevo. */
 export function AgregarPerfilCard({ onAgregar }: { onAgregar: () => void }) {

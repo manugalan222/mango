@@ -1,4 +1,4 @@
-import { ManoIcon, type NombreIcono } from '@/components/mango/ManoIcon';
+import { ManoIcon, type NombreIcono } from '@/components/marca/ManoIcon';
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
 
